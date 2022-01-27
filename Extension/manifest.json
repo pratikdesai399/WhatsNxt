@@ -1,0 +1,11 @@
+{
+    "name": "WhatsNxt",
+    "manifest_version": 3,
+    "version": "1.0",
+    "description": "Auto-Complete Tool",
+    "permissions": ["storage"],
+    "action": {
+        "default_popup": "popup.html"
+    }
+
+}
