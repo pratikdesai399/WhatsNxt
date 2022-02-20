@@ -19,7 +19,7 @@ def autocomplete():
 
     #sample context
     context = "@rhugaved: How are"
-    result = modelPipeline(context, max_length=20, num_return_sequences=5, do_sample=True, eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
+    result = modelPipeline(context, max_length=50, num_return_sequences=3, do_sample=True, eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
     print("Result: {}".format(result))
 
     res = jsonify({
