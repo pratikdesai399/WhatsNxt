@@ -6,7 +6,7 @@ $(document).ready(function(){
         console.log("Loading...")
         if(tabKeyPress == false){
             if($('[data-tab="10"]').length > 0){
-                //console.log($('[data-tab="10"]'));
+                console.log($('[data-tab="10"]'));
                 //console.log("Event Listerner");
                 $('[data-tab="10"]').on('keydown', function(e){
                     if(e.keyCode == 9){
@@ -23,8 +23,11 @@ $(document).ready(function(){
 
                 tabKeyPress = true;
                 console.log("Aha Tab key pressed is true now")
-                //clearInterval(interval);
+                clearInterval(interval);
             }
         }
+
+        //if chat change detected tabKeyPress = false again
+        
     }, 1000);
 });
