@@ -2,45 +2,6 @@ function sampleFun(){
     console.log("SAMPLE PROMPTS");
 }
 
-function generateContext() {
-    var selfName = '';
-    var context = ''
-    var messages = $(".focusable-list-item");
-    messages = messages.slice(-5);
-    messages.each(function () {
-      var classes = $(this).attr('class');
-      var type = "";
-      if (classes.includes('message-in')) {
-        type = 'incoming';
-      }
-      else if (classes.includes('message-out')) {
-        type = 'outgoing';
-      }
-      var texts = $(this).find('.copyable-text');
-      if (texts.length == 2) {
-        console.log('reached')
-        var metadata = $(texts[0]).data('prePlainText');
-        var author = metadata.split(']')[1].trim();
-        var time = metadata.split(']')[0].split('[')[1].trim()
-        var message = $(texts[1]).text().trim();
-        context += author + ' ' + message + '#';
-        if (type === 'outgoing' && selfName === '') {
-          selfName = author;
-        }
-      }
-    });
-    // console.log(text);
-  
-    currentMessage = $('div[data-tab="6"]').text();
-  
-    context += selfName + ' ' + currentMessage;
-    context = context.trim();
-  
-    console.log('context : ', context);
-    console.log('author : ', selfName);
-    return context;
-  }
-
 $(document).ready(function(){
     var chat_name, newChatName;
     console.log("WhatsNxt?");
@@ -65,7 +26,7 @@ $(document).ready(function(){
                         console.log("TAB KEY PRESSED");
                         //Generate Prompts
                         //sampleFun();
-                        var context = generateContext();
+                        //var context = getContextforAutocomplete();
                         console.log(context);
 
                     }
