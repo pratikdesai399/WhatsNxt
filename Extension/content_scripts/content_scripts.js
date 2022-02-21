@@ -27,7 +27,7 @@ $(document).ready(function(){
                         //Generate Prompts
                         //sampleFun();
                         //var context = getContextforAutocomplete();
-                        console.log(context);
+                        //console.log(context);
 
                     }
                 });
