@@ -1,4 +1,9 @@
+function sampleFun(){
+    console.log("SAMPLE PROMPTS");
+}
+
 $(document).ready(function(){
+    var chat_name, newChatName;
     console.log("WhatsNxt?");
     tabKeyPress = false;
 
@@ -6,7 +11,10 @@ $(document).ready(function(){
         console.log("Loading...")
         if(tabKeyPress == false){
             if($('[data-tab="10"]').length > 0){
-                console.log($('[data-tab="10"]'));
+                chat_name = document.getElementsByClassName('_21nHd')[0].childNodes[0].childNodes[0].data;
+                console.log("CHAT NAME IN INNER LOOP: "+chat_name);
+
+               // console.log($('[data-tab="10"]'));
                 //console.log("Event Listerner");
                 $('[data-tab="10"]').on('keydown', function(e){
                     if(e.keyCode == 9){
@@ -17,17 +25,34 @@ $(document).ready(function(){
                         $('[data-tab="10"]').blur();
                         console.log("TAB KEY PRESSED");
                         //Generate Prompts
+                        sampleFun();
 
                     }
                 });
-
+                
                 tabKeyPress = true;
-                console.log("Aha Tab key pressed is true now")
-                clearInterval(interval);
+                
+                //console.log("Aha Tab key pressed is true now")
+                //clearInterval(interval);
             }
         }
-
+        else{
+            newChatName = document.getElementsByClassName('_21nHd')[0].childNodes[0].childNodes[0].data;
+            console.log("NEW CHAT NAME: "+newChatName);
+            console.log("CHAT NAME: "+chat_name);
+            if(newChatName != chat_name && newChatName!=undefined){
+                //console.log(chat_name);
+                //console.log(newChatName);
+                console.log("UNBINDING NOW");
+                $('[data-tab="10"]').off('keydown');
+                tabKeyPress = false;
+            }
+        }
+        
         //if chat change detected tabKeyPress = false again
+        //Also look into keyup 
+        // Problem is that it will call prompts multiple times which we dont want
+        
         
     }, 1000);
 });
