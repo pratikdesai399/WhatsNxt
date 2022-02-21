@@ -2,17 +2,56 @@ function sampleFun(){
     console.log("SAMPLE PROMPTS");
 }
 
+function generateContext() {
+    var selfName = '';
+    var context = ''
+    var messages = $(".focusable-list-item");
+    messages = messages.slice(-5);
+    messages.each(function () {
+      var classes = $(this).attr('class');
+      var type = "";
+      if (classes.includes('message-in')) {
+        type = 'incoming';
+      }
+      else if (classes.includes('message-out')) {
+        type = 'outgoing';
+      }
+      var texts = $(this).find('.copyable-text');
+      if (texts.length == 2) {
+        console.log('reached')
+        var metadata = $(texts[0]).data('prePlainText');
+        var author = metadata.split(']')[1].trim();
+        var time = metadata.split(']')[0].split('[')[1].trim()
+        var message = $(texts[1]).text().trim();
+        context += author + ' ' + message + '#';
+        if (type === 'outgoing' && selfName === '') {
+          selfName = author;
+        }
+      }
+    });
+    // console.log(text);
+  
+    currentMessage = $('div[data-tab="6"]').text();
+  
+    context += selfName + ' ' + currentMessage;
+    context = context.trim();
+  
+    console.log('context : ', context);
+    console.log('author : ', selfName);
+    return context;
+  }
+
 $(document).ready(function(){
     var chat_name, newChatName;
     console.log("WhatsNxt?");
     tabKeyPress = false;
 
     var interval = setInterval(function(){
-        console.log("Loading...")
+        //console.log("Loading...")
         if(tabKeyPress == false){
             if($('[data-tab="10"]').length > 0){
                 chat_name = document.getElementsByClassName('_21nHd')[0].childNodes[0].childNodes[0].data;
-                console.log("CHAT NAME IN INNER LOOP: "+chat_name);
+                //console.log("CHAT NAME IN INNER LOOP: "+chat_name);
 
                // console.log($('[data-tab="10"]'));
                 //console.log("Event Listerner");
@@ -25,7 +64,9 @@ $(document).ready(function(){
                         $('[data-tab="10"]').blur();
                         console.log("TAB KEY PRESSED");
                         //Generate Prompts
-                        sampleFun();
+                        //sampleFun();
+                        var context = generateContext();
+                        console.log(context);
 
                     }
                 });
@@ -38,9 +79,9 @@ $(document).ready(function(){
         }
         else{
             newChatName = document.getElementsByClassName('_21nHd')[0].childNodes[0].childNodes[0].data;
-            console.log("NEW CHAT NAME: "+newChatName);
-            console.log("CHAT NAME: "+chat_name);
-            if(newChatName != chat_name && newChatName!=undefined){
+            //console.log("NEW CHAT NAME: "+newChatName);
+            //console.log("CHAT NAME: "+chat_name);
+            if(newChatName != chat_name){
                 //console.log(chat_name);
                 //console.log(newChatName);
                 console.log("UNBINDING NOW");
