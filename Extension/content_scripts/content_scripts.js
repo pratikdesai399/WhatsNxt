@@ -2,6 +2,28 @@ function sampleFun(){
     console.log("SAMPLE PROMPTS");
 }
 
+function getContextforAutocomplete(){
+    var myName = "";
+    var context = "";
+    var msgs = $(".focasable-list-item");
+    currentMessage = $('div[data-tab="10"]').text();
+    //console.log(currentMessage);
+    return currentMessage;
+}
+
+function getAutocompleteResults(context){
+    console.log("AUTOCOMPLETE RESULTS");
+    $.ajax({
+        url: 'http://localhost:5000/autocomplete',
+        crossDomain: true,
+        dataType: 'json',
+        data: { context: context },
+        success: (res) => {
+          console.log(res.AUTOCOMPLETE);
+        }
+      });
+}
+
 $(document).ready(function(){
     var chat_name, newChatName;
     console.log("WhatsNxt?");
@@ -26,8 +48,9 @@ $(document).ready(function(){
                         console.log("TAB KEY PRESSED");
                         //Generate Prompts
                         //sampleFun();
-                        //var context = getContextforAutocomplete();
+                        var context = getContextforAutocomplete();
                         //console.log(context);
+                        getAutocompleteResults(context);
 
                     }
                 });
