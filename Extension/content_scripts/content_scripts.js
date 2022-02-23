@@ -3,12 +3,46 @@ function sampleFun(){
 }
 
 function getContextforAutocomplete(){
-    var myName = "";
-    var context = "";
-    var msgs = $(".focasable-list-item");
+    var myName = '';
+    var context = '';
+
+    var msgs = $(".focusable-list-item");
+    msgs = msgs.slice(-5);
+    //console.log("MESSAGES: "+ msgs);
+
+    msgs.each(function () {
+      var classes = $(this).attr('class');
+      var type = '';
+
+      if (classes.includes('message-in')) {
+        type = 'msg_incoming';
+      }
+      else if (classes.includes('message-out')) {
+        type = 'msg_outgoing';
+      }
+
+      var lines = $(this).find('.copyable-text');
+      //console.log("LINES: "+ lines);
+
+      //If convesartion length is more than 2 than adding # at the end of each statement so that the model can easily predict till next #
+      if (lines.length == 2) {
+        var metadata = $(lines[0]).data('prePlainText');
+        var msgAuthor = metadata.split(']')[1].trim();
+        var time = metadata.split(']')[0].split('[')[1].trim()
+        var message = $(lines[1]).text().trim();
+        context += msgAuthor + ' ' + message + '#';
+
+        if (type === 'msg_outgoing' && myName === '') {
+          myName = msgAuthor;
+        }
+      }
+    });
+  
     currentMessage = $('div[data-tab="10"]').text();
-    //console.log(currentMessage);
-    return currentMessage;
+  
+    context += myName + ' ' + currentMessage;
+    context = context.trim();
+    return context;
 }
 
 function getAutocompleteResults(context){
@@ -19,7 +53,8 @@ function getAutocompleteResults(context){
         dataType: 'json',
         data: { context: context },
         success: (res) => {
-          console.log(res.AUTOCOMPLETE);
+            //displayAutocompleteResults()
+            console.log(res.AUTOCOMPLETE);
         }
       });
 }
@@ -49,7 +84,7 @@ $(document).ready(function(){
                         //Generate Prompts
                         //sampleFun();
                         var context = getContextforAutocomplete();
-                        //console.log(context);
+                        console.log("CONTEXT: "+context);
                         getAutocompleteResults(context);
 
                     }
