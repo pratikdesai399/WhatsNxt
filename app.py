@@ -10,7 +10,7 @@ CORS(app)
 
 
 global modelPipeline
-modelPipeline = pipeline('text-generation', model = 'D:\COEP\Final Year\BTech Project\model\output')
+modelPipeline = pipeline('text-generation', model = 'D:\COEP\Final Year\BTech Project\OnlyTextModel\output')
 
 @app.route("/")
 def hello():
@@ -23,7 +23,7 @@ def hello():
 def autocomplete():
     #sample context
     context = request.args.get('context', default = '', type = str)
-    result = modelPipeline(context, max_length=50, num_return_sequences=5, do_sample=True, eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
+    result = modelPipeline(context, max_length=90, num_return_sequences=5, do_sample=True, eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
     print("Result: {}".format(result))
 
     res = jsonify({
