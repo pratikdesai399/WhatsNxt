@@ -1,27 +1,24 @@
 {
+  "manifest_version": 3,
+  "name": "WhatsNxt?",
+  "version": "0.1",
 
-    "manifest_version": 2,
-    "name": "WhatsNxt?",
-    "version": "1.0",
-  
-    "description": "Autocomplete Tool for Whatsapp Web :)",
+  "description": "Autocomplete Tool for Whatsapp Web :)",
 
-    "permissions": [
-        "activeTab",
-        "webRequest",
-        "<all_urls>",
-        "http://localhost/*"
-    ],
+  "permissions": ["activeTab", "webRequest"],
+  "host_permissions": ["<all_urls>", "http://localhost/*"],
 
-    "browser_action": {  
-        "default_title": "WhatsNxt",
-        "default_popup": "popup/popup.html"
-     },
-     "content_scripts": [
-       {
-         "matches": ["https://web.whatsapp.com/"],
-         "js": ["content_scripts/jquery.min.js","content_scripts/content_scripts.js"]
-       }
-     ]
-  
-  }
+  "action": {
+    "default_title": "WhatsNxt",
+    "default_popup": "popup/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://web.whatsapp.com/"],
+      "js": [
+        "content_scripts/jquery.min.js",
+        "content_scripts/content_scripts.js"
+      ]
+    }
+  ]
+}

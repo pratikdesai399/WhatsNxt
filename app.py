@@ -10,7 +10,7 @@ CORS(app)
 
 
 global modelPipeline
-modelPipeline = pipeline('text-generation', model = 'D:\COEP\Final Year\BTech Project\OnlyTextModel\output')
+modelPipeline = pipeline('text-generation', model = '/home/versatile/RON/Btech_Project/Models/6l_data_model/output')
 
 @app.route("/")
 def hello():
