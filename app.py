@@ -23,7 +23,14 @@ def hello():
 def autocomplete():
     #sample context
     context = request.args.get('context', default = '', type = str)
-    result = modelPipeline(context, max_length=90, num_return_sequences=5, do_sample=True, eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
+    result = []
+    i = 0
+    while i < 5 :
+        temp = modelPipeline(context, max_length=90, num_return_sequences=1, do_sample=True, eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
+        if len(temp[0]['generated_text']) - len(context) > 3 :
+            result.append(temp[0])
+            i = i + 1
+
     print("Result: {}".format(result))
 
     res = jsonify({
