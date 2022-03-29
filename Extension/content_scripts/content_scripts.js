@@ -93,6 +93,7 @@ function displayAutocompleteResults(words, prompts, context) {
     '<div style="flex-direction: row;display: flex;"><p style="font-size: 12px; padding: 15px; font-weight: 900; text-transform: uppercase">WhatsNxt: Autocomplete Responses</p></div>'
   );
 
+  // Sentence
   var currSelectedPrompt = 0;
   var propmtLen = prompts.length;
   prompts.forEach((p, i) => {
@@ -106,11 +107,13 @@ function displayAutocompleteResults(words, prompts, context) {
     );
   });
 
+  // Words
+
   words.forEach((w, i) => {
     $("#pprompts").append(
       `<p class='prompt' id="${
         propmtLen + i
-      }" style='border-radius: 5px; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${
+      }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${
         w[0]
       }</p>`
     );
