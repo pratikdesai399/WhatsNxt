@@ -46,21 +46,45 @@ function getContextforAutocomplete() {
 
 function getAutocompleteResults(context) {
   // console.log("AUTOCOMPLETE RESULTS");
+  // var wordcomplete = [];
+  // var autocomplete = [];
+
   $.ajax({
-    url: "http://localhost:5000/autocomplete",
+    url: "http://localhost:5000/wordcomplete",
     crossDomain: true,
+    headers: {
+      "Access-Control-Allow-Origin": "http://localhost:5000/",
+    },
     dataType: "json",
     data: { context: context },
     success: (res) => {
-      // console.log(res.AUTOCOMPLETE);
-      displayAutocompleteResults(res.AUTOCOMPLETE, context);
+      // displayAutocompleteResults(res.WORDCOMPLETE, context);
+      wordcomplete = res.WORDCOMPLETE;
+
+      $.ajax({
+        url: "http://localhost:5000/autocomplete",
+        crossDomain: true,
+        headers: {
+          "Access-Control-Allow-Origin": "http://localhost:5000/",
+        },
+        dataType: "json",
+        data: { context: context },
+        success: (res) => {
+          autocomplete = res.AUTOCOMPLETE;
+          console.log(autocomplete);
+          console.log(wordcomplete);
+          displayAutocompleteResults(wordcomplete, autocomplete, context);
+          // displayAutocompleteResults(res.AUTOCOMPLETE, context);
+        },
+      });
     },
   });
 }
 
-function displayAutocompleteResults(prompts, context) {
+function displayAutocompleteResults(words, prompts, context) {
   //console.log("AUTOCOMPLETE: "+prompts);
   //console.log("Context is: "+ context);
+  console.log("words : ", words);
   $("#pprompts").remove();
   $('div[data-tab="8"]').append(
     "<div id='pprompts' style='padding: 20px;margin: 20px; border-radius: 15px; background:#F0FFFF'></div>"
@@ -70,7 +94,7 @@ function displayAutocompleteResults(prompts, context) {
   );
 
   var currSelectedPrompt = 0;
-
+  var propmtLen = prompts.length;
   prompts.forEach((p, i) => {
     p = p.generated_text.replace(context, "").trim();
 
@@ -79,6 +103,16 @@ function displayAutocompleteResults(prompts, context) {
     p = p.split("#")[0];
     $("#pprompts").append(
       `<p class='prompt' id="${i}" style='border-radius: 5px; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${p}</p>`
+    );
+  });
+
+  words.forEach((w, i) => {
+    $("#pprompts").append(
+      `<p class='prompt' id="${
+        propmtLen + i
+      }" style='border-radius: 5px; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${
+        w[0]
+      }</p>`
     );
   });
 
@@ -118,13 +152,15 @@ function displayAutocompleteResults(prompts, context) {
     // console.log($("#pprompts").length);
     // console.log(e.keyCode);
     if ($("#pprompts").length) {
-      e.preventDefault();
-      e.stopPropagation();
+      // e.preventDefault();
+      // e.stopPropagation();
       // console.log(e);
 
       // console.log("inside", currSelectedPrompt);
       //Up arrow
       if (e.keyCode === 38) {
+        e.preventDefault();
+        e.stopPropagation();
         currSelectedPrompt -= 1;
         if (currSelectedPrompt < 0) {
           currSelectedPrompt = totalPrompts - 1;
@@ -136,6 +172,8 @@ function displayAutocompleteResults(prompts, context) {
       }
       //Down arrow
       else if (e.keyCode === 40) {
+        e.preventDefault();
+        e.stopPropagation();
         currSelectedPrompt += 1;
         if (currSelectedPrompt >= totalPrompts) {
           currSelectedPrompt = 0;
@@ -147,6 +185,8 @@ function displayAutocompleteResults(prompts, context) {
       }
       //Esc
       else if (e.keyCode === 27) {
+        e.preventDefault();
+        e.stopPropagation();
         $("#pprompts").remove();
         document
           .getElementsByClassName("_2lMWa")[0]
@@ -160,6 +200,8 @@ function displayAutocompleteResults(prompts, context) {
       }
       //Enter
       else if (e.keyCode === 13) {
+        e.preventDefault();
+        e.stopPropagation();
         document
           .getElementsByClassName("_2lMWa")[0]
           .removeEventListener("keydown", handlePrompts);
