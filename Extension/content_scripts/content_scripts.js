@@ -179,22 +179,39 @@ function getCalendarResults(calendar_context, new_context) {
 }
 
 function getAutocompleteResults(context) {
-  // console.log("AUTOCOMPLETE RESULTS");
   $.ajax({
-    url: "http://localhost:5000/autocomplete",
+    url: "http://localhost:5000/wordcomplete",
     crossDomain: true,
+    headers: {
+      "Access-Control-Allow-Origin": "http://localhost:5000/",
+    },
     dataType: "json",
     data: { context: context },
     success: (res) => {
-      // console.log(res.AUTOCOMPLETE);
-      displayAutocompleteResults(res.AUTOCOMPLETE, context);
+      wordcomplete = res.WORDCOMPLETE;
+      autocomplete = "";
+
+      $.ajax({
+        url: "http://localhost:5000/autocomplete",
+        crossDomain: true,
+        headers: {
+          "Access-Control-Allow-Origin": "http://localhost:5000/",
+        },
+        dataType: "json",
+        data: { context: context },
+        success: (res) => {
+          autocomplete = res.AUTOCOMPLETE;
+          console.log(autocomplete);
+          console.log(wordcomplete);
+          displayAutocompleteResults(wordcomplete, autocomplete, context);
+        },
+      });
     },
   });
 }
 
-function displayAutocompleteResults(prompts, context) {
-  //console.log("AUTOCOMPLETE: "+prompts);
-  //console.log("Context is: "+ context);
+function displayAutocompleteResults(words, prompts, context) {
+  console.log("words : ", words);
   $("#pprompts").remove();
   $('div[data-tab="8"]').append(
     "<div id='pprompts' style='padding: 20px;margin: 20px; border-radius: 15px; background:#F0FFFF'></div>"
@@ -203,16 +220,25 @@ function displayAutocompleteResults(prompts, context) {
     '<div style="flex-direction: row;display: flex;"><p style="font-size: 12px; padding: 15px; font-weight: 900; text-transform: uppercase">WhatsNxt: Autocomplete Responses</p></div>'
   );
 
+  // Sentence
   var currSelectedPrompt = 0;
-
+  var propmtLen = prompts.length;
   prompts.forEach((p, i) => {
     p = p.generated_text.replace(context, "").trim();
-
-    //First whole message to display
-    //console.log("P "+p);
     p = p.split("#")[0];
     $("#pprompts").append(
       `<p class='prompt' id="${i}" style='border-radius: 5px; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${p}</p>`
+    );
+  });
+
+  // Words
+  words.forEach((w, i) => {
+    $("#pprompts").append(
+      `<p class='prompt' id="${
+        propmtLen + i
+      }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${
+        w[0]
+      }</p>`
     );
   });
 
@@ -244,21 +270,12 @@ function displayAutocompleteResults(prompts, context) {
     $('div[data-tab="10"]').siblings().hide();
   });
 
-  // $(".prompt").on("Enter", function () {
-  //   console.log("Enter pressed");
-  // });
-
   function handlePrompts(e) {
-    // console.log($("#pprompts").length);
-    // console.log(e.keyCode);
     if ($("#pprompts").length) {
-      e.preventDefault();
-      e.stopPropagation();
-      // console.log(e);
-
-      // console.log("inside", currSelectedPrompt);
       //Up arrow
       if (e.keyCode === 38) {
+        e.preventDefault();
+        e.stopPropagation();
         currSelectedPrompt -= 1;
         if (currSelectedPrompt < 0) {
           currSelectedPrompt = totalPrompts - 1;
@@ -270,6 +287,8 @@ function displayAutocompleteResults(prompts, context) {
       }
       //Down arrow
       else if (e.keyCode === 40) {
+        e.preventDefault();
+        e.stopPropagation();
         currSelectedPrompt += 1;
         if (currSelectedPrompt >= totalPrompts) {
           currSelectedPrompt = 0;
@@ -281,6 +300,8 @@ function displayAutocompleteResults(prompts, context) {
       }
       //Esc
       else if (e.keyCode === 27) {
+        e.preventDefault();
+        e.stopPropagation();
         $("#pprompts").remove();
         document
           .getElementsByClassName("_2lMWa")[0]
@@ -294,6 +315,8 @@ function displayAutocompleteResults(prompts, context) {
       }
       //Enter
       else if (e.keyCode === 13) {
+        e.preventDefault();
+        e.stopPropagation();
         document
           .getElementsByClassName("_2lMWa")[0]
           .removeEventListener("keydown", handlePrompts);
