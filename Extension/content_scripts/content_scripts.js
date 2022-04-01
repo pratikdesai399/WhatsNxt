@@ -2,6 +2,93 @@ function sampleFun() {
   console.log("SAMPLE PROMPTS");
 }
 
+function getContextforEmotionDetection() {
+  var myName = "";
+  var context = "";
+  var messageDOMs = [];
+
+  var msgs = $(".focusable-list-item");
+  msgs = msgs.slice(-10);
+  // console.log("Messages: " + msgs);
+
+  msgs.each(function () {
+    var classes = $(this).attr("class");
+    var type = "";
+
+    if (classes.includes("message-in")) {
+      type = "msg_incoming";
+    } else if (classes.includes("message-out")) {
+      type = "msg_outgoing";
+    }
+
+    var lines = $(this).find(".copyable-text");
+    // console.log("LINES: " + lines);
+
+    //If convesartion length is more than 2 than adding # at the end of each statement so that the model can easily predict till next #
+    if (lines.length == 2) {
+      var metadata = $(lines[0]).data("prePlainText");
+      var msgAuthor = metadata.split("]")[1].trim();
+      var time = metadata.split("]")[0].split("[")[1].trim();
+      var message = $(lines[1]).text().trim();
+      var msg = msgAuthor + " " + message + "#";
+      messageDOMs.push(lines[1]);
+      // console.log(msg);
+      context += msg.trim();
+
+      if (type === "msg_outgoing" && myName === "") {
+        myName = msgAuthor;
+      }
+    }
+  });
+
+  // currentMessage = $('div[data-tab="10"]').text();
+
+  // context += myName + " " + currentMessage;
+  // context = context.trim();
+  console.log("EMOTION CONTEXT: ");
+  console.log(context);
+  new_context = myName + "#" + context;
+  return [messageDOMs, new_context];
+}
+
+function getContextForCalendar() {
+  var context = "";
+  var messageDOMs = [];
+  var authors = [];
+  var myname = "";
+  var msgs = $(".focusable-list-item");
+  msgs = msgs.slice(-10);
+  msgs.each(function () {
+    var classes = $(this).attr("class");
+    var type = "";
+    if (classes.includes("message-in")) {
+      type = "msg_incoming";
+    } else if (classes.includes("message-out")) {
+      type = "msg_outgoing";
+    }
+
+    var texts = $(this).find(".copyable-text");
+    if (texts.length == 2) {
+      var metadata = $(texts[0]).data("prePlainText");
+      var author = metadata.split("]")[1].trim().slice(0, -1);
+      var message = $(texts[1]).text().trim();
+      messageDOMs.push(texts[1]);
+      // message = message.replaceAll('?', '<Q>')
+      // message = message.replaceAll('&', '<AND>')
+      context += message + "<SPLIT>";
+      if (type === "msg_outgoing" && myname === "") {
+        myname = author;
+      }
+      if (type != "msg_outgoing") {
+        authors.push(author);
+      }
+    }
+  });
+  console.log("calender context: ");
+  console.log(context);
+  return [context, messageDOMs, authors, myname];
+}
+
 function getContextforAutocomplete() {
   var myName = "";
   var context = "";
@@ -42,6 +129,53 @@ function getContextforAutocomplete() {
   context += myName + " " + currentMessage;
   context = context.trim();
   return context;
+}
+
+function getEmotionDetectionResults(emotion_context) {
+  // console.log("Emotion Detection RESULTS");
+  var context = emotion_context[1];
+  var DOMs = emotion_context[0];
+  new_context = "";
+  $.ajax({
+    url: "http://localhost:5000/emotion",
+    crossDomain: true,
+    async: false,
+    dataType: "json",
+    data: { context: context },
+    success: (res) => {
+      // console.log("Emotion done");
+      console.log(res.EMOTION);
+      globalThis.new_context = displayEmotionResults(
+        res.EMOTION,
+        context,
+        DOMs
+      );
+    },
+  });
+  console.log("New context: ");
+  console.log(new_context);
+  return new_context;
+}
+
+function getCalendarResults(calendar_context, new_context) {
+  var context = new_context;
+  var DOMs = calendar_context[1];
+  var authors = calendar_context[2];
+  var myname = calendar_context[3];
+  console.log("Get new: ");
+  console.log(context);
+
+  $.ajax({
+    url: "http://localhost:5000/calendar",
+    crossDomain: true,
+    dataType: "json",
+    data: { context: context },
+    success: (d) => {
+      console.log("Calender Response: ");
+      console.log(d.CALENDAR);
+      displayCalendar(d.CALENDAR, DOMs, context, authors, myname);
+    },
+  });
 }
 
 function getAutocompleteResults(context) {
@@ -174,9 +308,148 @@ function displayAutocompleteResults(prompts, context) {
   document.querySelector('[data-tab="8"]').scrollIntoView(false);
 }
 
+function displayEmotionResults(vals, context, DOMs) {
+  console.log("In Display emotion function");
+  var myname;
+  var msgs = [];
+  console.log("context: ");
+  console.log(context);
+  // Structure of context: @rhugaved:#Aditya Patil Jio: Movie ahe
+  // 1 hr remaining#@rhugaved: Nice#@rhugaved: Enjoy#
+  // So, in below split we split at first ":", which gives an array like this
+  // ["@rhugaved", "#Aditya Pa...", ""], so we slice to get the first 2 elements
+  context = context.split(/:(.*)/s).slice(0, 2);
+  myname = context[0];
+  context = context[1].split("#").slice(1, -1);
+  console.log("context: ");
+  console.log(context);
+
+  // for msg in context.split("#")[:-1]:
+  for (let i = 0; i < context.length; i++) {
+    msgs.push(context[i].split(":")[1]);
+  }
+  console.log("Messages: ");
+  console.log(msgs);
+  var new_context = "";
+
+  for (var i = 0; i < vals.length; i++) {
+    var temp = vals[i];
+    var message = msgs[i];
+    $(DOMs[i]).text("");
+    console.log("<span>" + message + " #" + temp + "#" + "</span>");
+    new_context += message + " #" + temp + "#" + "<SPLIT>";
+    $(DOMs[i]).append("<span>" + message + " #" + temp + "#" + "</span>");
+  }
+  console.log("emotion context");
+  console.log(new_context);
+  return new_context;
+}
+
+function displayCalendar(vals, DOMs, context, authors, selfName) {
+  // console.log("In Display Calendar function");
+  var context = context.split("<SPLIT>");
+  authors = [...new Set(authors)];
+  var nonSelfNames = "";
+
+  if (authors.length > 1) {
+    nonSelfNames = authors.join(", ");
+  } else {
+    nonSelfNames = authors[0];
+  }
+
+  console.log(selfName, "-|-", nonSelfNames);
+  console.log(vals, vals.length);
+
+  for (var i = 0; i < vals.length; i++) {
+    var temp = vals[i];
+    console.log(context[i], temp);
+    if (temp.has_calendar) {
+      console.log("In if");
+      var message = context[i];
+      var day = String(temp.day);
+      if (parseInt(day) < 10) {
+        day = "0" + day;
+      }
+      var month = String(temp.month);
+      if (parseInt(month) < 10) {
+        month = "0" + month;
+      }
+      var year = String(temp.year);
+      var hour = String(temp.hour);
+      if (parseInt(hour) < 10) {
+        hour = "0" + hour;
+      }
+      var minute = String(temp.minute);
+      if (parseInt(minute) < 10) {
+        minute = "0" + minute;
+      }
+      // var sec = "0";
+      console.log("Hour: ");
+      console.log(hour);
+      console.log(minute);
+      console.log(String(parseInt(minute) + 30));
+      console.log(
+        year +
+          month +
+          day +
+          "T" +
+          hour +
+          minute +
+          "00/" +
+          year +
+          month +
+          day +
+          "T" +
+          hour +
+          String(parseInt(minute) + 30) +
+          "00"
+      );
+
+      // var link = "https://calendar.google.com/calendar/u/0/r/eventedit?text=Quick Chat with " + nonSelfNames + "&details=This is a quick Chat with you (" + selfName + ") and " + nonSelfNames + ". This invite was automatically detected and created by You! &dates=20210222T190000Z/20210222T193000"
+      var link =
+        "https://calendar.google.com/calendar/u/0/r/eventedit?text=Quick Chat with " +
+        nonSelfNames +
+        "&details=This is a quick Chat with you (" +
+        selfName +
+        ") and " +
+        nonSelfNames +
+        ". This invite was automatically detected and created by You! &dates=" +
+        year +
+        month +
+        day +
+        "T" +
+        hour +
+        minute +
+        "00/" +
+        year +
+        month +
+        day +
+        "T" +
+        hour +
+        String(parseInt(minute) + 30) +
+        "00";
+
+      console.log(link);
+      $(DOMs[i]).text("");
+      $(DOMs[i]).append(
+        "<span>" +
+          // message.slice(0, temp.start) +
+          '<a target="_blank" href="' +
+          link +
+          '" style="text-decoration: underline;text-decoration-style: dashed;">' +
+          message +
+          "</a>" +
+          // message.slice(temp.end) +
+          "</span>"
+      );
+      console.log("OUTSDIE");
+    }
+  }
+}
+
 $(document).ready(function () {
   var chat_name, newChatName;
-  // console.log("WhatsNxt?");
+  console.log("WhatsNxt?");
   tabKeyPress = false;
 
   var interval = setInterval(function () {
@@ -201,7 +474,11 @@ $(document).ready(function () {
             //Generate Prompts
             //sampleFun();
             var context = getContextforAutocomplete();
-            // console.log("CONTEXT: " + context);
+            var calendar_context = getContextForCalendar();
+            var emotion_context = getContextforEmotionDetection();
+            console.log("CONTEXT: " + calendar_context);
+            var new_context = getEmotionDetectionResults(emotion_context);
+            getCalendarResults(calendar_context, new_context);
             getAutocompleteResults(context);
           }
         });
@@ -231,3 +508,5 @@ $(document).ready(function () {
     // Problem is that it will call prompts multiple times which we dont want
   }, 1000);
 });
+
+// https://calendar.google.com/calendar/u/0/r/create?text=Quick Chat with+ "&details=This is a quick Chat with you" + nonSelfNames + ". This invite was automatically detected and created by You! "
