@@ -1,3 +1,4 @@
+from audioop import reverse
 from distutils.log import debug
 from email.policy import default
 from unittest.util import _MAX_LENGTH
@@ -111,12 +112,14 @@ def hello():
 
 @app.route("/autocomplete")
 def autocomplete():
-    #sample context
     context = request.args.get('context', default = '', type = str)
+    # if(len(context) > 90) :
+    #     context = context[-90:]
+    print("Context len : ", len(context))
     result = []
     i = 0
     while i < 5 :
-        temp = modelPipeline(context, max_length=90, num_return_sequences=1, do_sample=True, eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
+        temp = modelPipeline(context, max_length=100, num_return_sequences=1, do_sample=True, eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
         if len(temp[0]['generated_text']) - len(context) > 3 :
             result.append(temp[0])
             i = i + 1
@@ -130,18 +133,18 @@ def autocomplete():
 
 @app.route("/wordcomplete")
 def wordcomplete() :
-    #sample context
-    # context = "How aer"
     context = request.args.get('context', default = "", type = str)
     context = context.split("#")[-1].split(":")[-1]
-    print("Context", len(context))
+    print("Context length : ", len(context))
     result = []
-    if len(context) != 0 :
+    wordlist = context.split(" ")
+    if len(context) != 0 and len(wordlist) > 2:
         result = worker(context, '')
+        print(result[0][0], context.split(" ", -1)[-1])
+        if result[0][0] == context.split(" ", -1)[-1] :
+            result = worker(context, 'prod')
     else :
         result = [["Hello", 1], ["Hi", 2]]
-        result.extend(worker("How about going to", 'prod'))
-    # result = list(dict.fromkeys(result))
     print(result)
     res = jsonify({
         "WORDCOMPLETE":result

@@ -45,10 +45,6 @@ function getContextforAutocomplete() {
 }
 
 function getAutocompleteResults(context) {
-  // console.log("AUTOCOMPLETE RESULTS");
-  // var wordcomplete = [];
-  // var autocomplete = [];
-
   $.ajax({
     url: "http://localhost:5000/wordcomplete",
     crossDomain: true,
@@ -58,8 +54,8 @@ function getAutocompleteResults(context) {
     dataType: "json",
     data: { context: context },
     success: (res) => {
-      // displayAutocompleteResults(res.WORDCOMPLETE, context);
       wordcomplete = res.WORDCOMPLETE;
+      autocomplete = "";
 
       $.ajax({
         url: "http://localhost:5000/autocomplete",
@@ -74,7 +70,6 @@ function getAutocompleteResults(context) {
           console.log(autocomplete);
           console.log(wordcomplete);
           displayAutocompleteResults(wordcomplete, autocomplete, context);
-          // displayAutocompleteResults(res.AUTOCOMPLETE, context);
         },
       });
     },
@@ -82,8 +77,6 @@ function getAutocompleteResults(context) {
 }
 
 function displayAutocompleteResults(words, prompts, context) {
-  //console.log("AUTOCOMPLETE: "+prompts);
-  //console.log("Context is: "+ context);
   console.log("words : ", words);
   $("#pprompts").remove();
   $('div[data-tab="8"]').append(
@@ -98,9 +91,6 @@ function displayAutocompleteResults(words, prompts, context) {
   var propmtLen = prompts.length;
   prompts.forEach((p, i) => {
     p = p.generated_text.replace(context, "").trim();
-
-    //First whole message to display
-    //console.log("P "+p);
     p = p.split("#")[0];
     $("#pprompts").append(
       `<p class='prompt' id="${i}" style='border-radius: 5px; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${p}</p>`
@@ -108,7 +98,6 @@ function displayAutocompleteResults(words, prompts, context) {
   });
 
   // Words
-
   words.forEach((w, i) => {
     $("#pprompts").append(
       `<p class='prompt' id="${
@@ -147,19 +136,8 @@ function displayAutocompleteResults(words, prompts, context) {
     $('div[data-tab="10"]').siblings().hide();
   });
 
-  // $(".prompt").on("Enter", function () {
-  //   console.log("Enter pressed");
-  // });
-
   function handlePrompts(e) {
-    // console.log($("#pprompts").length);
-    // console.log(e.keyCode);
     if ($("#pprompts").length) {
-      // e.preventDefault();
-      // e.stopPropagation();
-      // console.log(e);
-
-      // console.log("inside", currSelectedPrompt);
       //Up arrow
       if (e.keyCode === 38) {
         e.preventDefault();
