@@ -74,7 +74,7 @@ emotion_loaded_model = pickle.load(open(
 global modelPipeline
 # modelPipeline = pipeline('text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
 
-modelPipeline = pipeline('text-generation', model = '/home/versatile/RON/Btech_Project/Models/6l_data_model/output')
+modelPipeline = pipeline('text-generation', model = '/home/versatile/RON/Btech_Project/Models/model/output')
 # modelPipeline = pipeline('text-generation', model = '/home/versatile/Desktop/6l_data_model/output')
 
 
@@ -224,7 +224,7 @@ def autocomplete():
     #     if len(temp[0]['generated_text']) - len(context) > 3:
     #         result.append(temp[0])
     #         i = i + 1
-    result = modelPipeline(context, max_length=90, num_return_sequences=5, do_sample=True, eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
+    result = modelPipeline(context, max_length=100, num_return_sequences=3, do_sample=True, eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
 
     print("Result: {}".format(result))
 

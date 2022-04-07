@@ -226,9 +226,11 @@ function displayAutocompleteResults(words, prompts, context) {
   prompts.forEach((p, i) => {
     p = p.generated_text.replace(context, "").trim();
     p = p.split("#")[0];
-    $("#pprompts").append(
-      `<p class='prompt' id="${i}" style='border-radius: 5px; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${p}</p>`
-    );
+    if (p.length != 0) {
+      $("#pprompts").append(
+        `<p class='prompt' id="${i}" style='border-radius: 5px; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${p}</p>`
+      );
+    }
   });
 
   // Words
