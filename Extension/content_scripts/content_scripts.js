@@ -188,7 +188,7 @@ function getAutocompleteResults(context) {
     dataType: "json",
     data: { context: context },
     success: (res) => {
-      wordcomplete = res.WORDCOMPLETE;
+      wordcomplete = [res.COMPLETE, res.PREDICT, res.MANUAL];
       autocomplete = "";
 
       $.ajax({
@@ -232,14 +232,62 @@ function displayAutocompleteResults(words, prompts, context) {
   });
 
   // Words
-  words.forEach((w, i) => {
+  complete = words[0];
+  predict = words[1];
+  manual = words[2];
+
+  manual.forEach((w, i) => {
     $("#pprompts").append(
-      `<p class='prompt' id="${
+      `<p class='predictmanual' id="${
         propmtLen + i
       }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${
         w[0]
       }</p>`
     );
+  });
+
+  propmtLen = propmtLen + manual.length;
+
+  complete.forEach((w, i) => {
+    $("#pprompts").append(
+      `<p class='complete' id="${
+        propmtLen + i
+      }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${
+        w[0]
+      }</p>`
+    );
+  });
+
+  propmtLen = propmtLen + complete.length;
+
+  predict.forEach((w, i) => {
+    $("#pprompts").append(
+      `<p class='predictmanual' id="${
+        propmtLen + i
+      }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${
+        w[0]
+      }</p>`
+    );
+  });
+
+  // words.forEach((w, i) => {
+  //   $("#pprompts").append(
+  //     `<p class='words' id="${
+  //       propmtLen + i
+  //     }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${
+  //       w[0]
+  //     }</p>`
+  //   );
+  // });
+
+  $(".predictmanual").on("mouseover", function () {
+    $(".predictmanual").css("background", "none");
+    $(this).css("background", "#FFF");
+    try {
+      currSelectedPrompt = parseInt($(this)[0].id);
+    } catch (error) {
+      currSelectedPrompt = 0;
+    }
   });
 
   $(".prompt").on("mouseover", function () {
@@ -264,6 +312,37 @@ function displayAutocompleteResults(words, prompts, context) {
     var currentMessage = $('div[data-tab="10"]').text();
     $('div[data-tab="10"]').text("");
     currentMessage = currentMessage.trim() + " " + $(this).text();
+    $('div[data-tab="10"]').focus();
+    document.execCommand("insertText", false, currentMessage);
+    $("#pprompts").remove();
+    $('div[data-tab="10"]').siblings().hide();
+  });
+
+  $(".predictmanual").on("click", function () {
+    document
+      .getElementsByClassName("_2lMWa")[0]
+      .removeEventListener("keydown", handlePrompts);
+
+    var currentMessage = $('div[data-tab="10"]').text();
+    $('div[data-tab="10"]').text("");
+    currentMessage = currentMessage.trim() + " " + $(this).text();
+    $('div[data-tab="10"]').focus();
+    document.execCommand("insertText", false, currentMessage);
+    $("#pprompts").remove();
+    $('div[data-tab="10"]').siblings().hide();
+  });
+
+  $(".complete").on("click", function () {
+    document
+      .getElementsByClassName("_2lMWa")[0]
+      .removeEventListener("keydown", handlePrompts);
+
+    var currentMessage = $('div[data-tab="10"]').text();
+    $('div[data-tab="10"]').text("");
+    const lastindex = currentMessage.lastIndexOf(" ");
+    currentMessage = currentMessage.slice(0, lastindex);
+    console.log("Word Complete : " + currentMessage);
+    currentMessage = currentMessage + " " + $(this).text();
     $('div[data-tab="10"]').focus();
     document.execCommand("insertText", false, currentMessage);
     $("#pprompts").remove();

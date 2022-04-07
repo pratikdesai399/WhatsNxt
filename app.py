@@ -1,16 +1,15 @@
-from audioop import reverse
-from distutils.log import debug
-from opcode import hascompare, haslocal
-from traceback import print_tb
-from email.policy import default
-from unittest.util import _MAX_LENGTH
-from django.forms import DateInput
+# from audioop import reverse
+# from distutils.log import debug
+# from opcode import hascompare, haslocal
+# from traceback import print_tb
+# from email.policy import default
+# from unittest.util import _MAX_LENGTH
 from flask import Flask, jsonify, request
 import sys
 from flask_cors import CORS
-from matplotlib.pyplot import text
-from pandas import array
-from sympy import content
+# from matplotlib.pyplot import text
+# from pandas import array
+# from sympy import content
 from transformers import pipeline
 import pickle
 import numpy as np
@@ -23,13 +22,13 @@ import datetime
 import re
 
 # for ngram
-from pprint import pprint
+# from pprint import pprint
 import json
 import sys
 from nltk.corpus import brown
-from nltk.corpus import reuters
+# from nltk.corpus import reuters
 import nltk
-from nltk.corpus import PlaintextCorpusReader
+# from nltk.corpus import PlaintextCorpusReader
 
 # nltk.download('brown')
 
@@ -54,7 +53,7 @@ nltk.download('wordnet')
 nltk.download('omw-1.4')
 
 emotion_loaded_model = pickle.load(open(
-    '/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/emotion_detection/emotion_pipeline_model.pickle', 'rb'))
+    '/home/versatile/RON/Btech_Project/Models/emotion_pipeline_model.pickle', 'rb'))
 # text_data = pd.DataFrame(['I am pissed at you', 'How are you?', 'What a weird experience that was!', 'I feel sparkling', 'I miss him', 'I loved the way you cooked for me'])
 # raw_data = text_data.copy()
 # line = data_preprocessing(text_data)
@@ -73,10 +72,9 @@ emotion_loaded_model = pickle.load(open(
 # print(result)
 
 global modelPipeline
-modelPipeline = pipeline(
-    'text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
+# modelPipeline = pipeline('text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
 
-# modelPipeline = pipeline('text-generation', model = '/home/versatile/RON/Btech_Project/Models/6l_data_model/output')
+modelPipeline = pipeline('text-generation', model = '/home/versatile/RON/Btech_Project/Models/6l_data_model/output')
 # modelPipeline = pipeline('text-generation', model = '/home/versatile/Desktop/6l_data_model/output')
 
 
@@ -220,14 +218,15 @@ def autocomplete():
     print("Context len : ", len(context))
     result = []
     i = 0
-    while i < 5:
-        temp = modelPipeline(context, max_length=100, num_return_sequences=1, do_sample=True,
-                             eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
-        if len(temp[0]['generated_text']) - len(context) > 3:
-            result.append(temp[0])
-            i = i + 1
+    # while i < 5:
+    #     temp = modelPipeline(context, max_length=200, num_return_sequences=1, do_sample=True,
+    #                          eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
+    #     if len(temp[0]['generated_text']) - len(context) > 3:
+    #         result.append(temp[0])
+    #         i = i + 1
+    result = modelPipeline(context, max_length=90, num_return_sequences=5, do_sample=True, eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
 
-    # print("Result: {}".format(result))
+    print("Result: {}".format(result))
 
     res = jsonify({
         "AUTOCOMPLETE": result
@@ -240,18 +239,30 @@ def wordcomplete():
     context = request.args.get('context', default="", type=str)
     context = context.split("#")[-1].split(":")[-1]
     print("Context length : ", len(context))
-    result = []
+    complete = []
+    predict = []
+    manual = []
     wordlist = context.split(" ")
     if len(context) != 0 and len(wordlist) > 2:
-        result = worker(context, '')
-        print(result[0][0], context.split(" ", -1)[-1])
-        if result[0][0] == context.split(" ", -1)[-1]:
-            result = worker(context, 'prod')
+        complete = worker(context, '')
+        predict = worker(context, 'pred')
     else:
-        result = [["Hello", 1], ["Hi", 2]]
-    print(result)
+        manual = [["Hello", 1], ["Hi", 2]]
+
+    # result = []
+    # wordlist = context.split(" ")
+    # if len(context) != 0 and len(wordlist) > 2:
+    #     result = worker(context, '')
+    #     print("Pred : ", result[0][0], context.split(" ", -1)[-1])
+    #     if result[0][0] == context.split(" ", -1)[-1]:
+    #         result = worker(context, 'prod')
+    # else:
+    #     result = [["Hello", 1], ["Hi", 2]]
+    # print(result)
     res = jsonify({
-        "WORDCOMPLETE": result
+        "COMPLETE": complete,
+        "PREDICT": predict,
+        "MANUAL": manual
     })
     return res
 
