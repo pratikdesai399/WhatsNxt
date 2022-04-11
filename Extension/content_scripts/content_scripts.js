@@ -567,6 +567,11 @@ $(document).ready(function () {
 
         // console.log($('[data-tab="10"]'));
         //console.log("Event Listerner");
+        var calendar_context = getContextForCalendar();
+        var emotion_context = getContextforEmotionDetection();
+        console.log("CONTEXT: " + calendar_context);
+        var new_context = getEmotionDetectionResults(emotion_context);
+        getCalendarResults(calendar_context, new_context);
         $('[data-tab="10"]').on("keydown", function (e) {
           if (e.keyCode == 9) {
             e.stopPropagation();
@@ -578,11 +583,11 @@ $(document).ready(function () {
             //Generate Prompts
             //sampleFun();
             var context = getContextforAutocomplete();
-            var calendar_context = getContextForCalendar();
-            var emotion_context = getContextforEmotionDetection();
-            console.log("CONTEXT: " + calendar_context);
-            var new_context = getEmotionDetectionResults(emotion_context);
-            getCalendarResults(calendar_context, new_context);
+            // var calendar_context = getContextForCalendar();
+            // var emotion_context = getContextforEmotionDetection();
+            // console.log("CONTEXT: " + calendar_context);
+            // var new_context = getEmotionDetectionResults(emotion_context);
+            // getCalendarResults(calendar_context, new_context);
             getAutocompleteResults(context);
           }
         });

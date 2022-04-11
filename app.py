@@ -53,7 +53,7 @@ nltk.download('wordnet')
 nltk.download('omw-1.4')
 
 emotion_loaded_model = pickle.load(open(
-    '/home/versatile/RON/Btech_Project/Models/emotion_pipeline_model.pickle', 'rb'))
+    '/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/emotion_detection/emotion_pipeline_model.pickle', 'rb'))
 # text_data = pd.DataFrame(['I am pissed at you', 'How are you?', 'What a weird experience that was!', 'I feel sparkling', 'I miss him', 'I loved the way you cooked for me'])
 # raw_data = text_data.copy()
 # line = data_preprocessing(text_data)
@@ -74,7 +74,8 @@ emotion_loaded_model = pickle.load(open(
 global modelPipeline
 # modelPipeline = pipeline('text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
 
-modelPipeline = pipeline('text-generation', model = '/home/versatile/RON/Btech_Project/Models/model/output')
+modelPipeline = pipeline(
+    'text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
 # modelPipeline = pipeline('text-generation', model = '/home/versatile/Desktop/6l_data_model/output')
 
 
@@ -176,8 +177,9 @@ def hello():
 @app.route("/emotion")
 def emotion():
     try:
+        # emotions = np.array(['Anger', 'Happy', 'Love', 'Neutral', 'Sad', 'Surprise'])
         emotions = np.array(
-            ['Anger', 'Happy', 'Love', 'Neutral', 'Sad', 'Surprise'])
+            ['😡', '😄', '❤️', '😐', '😞', '😮'])
         context = request.args.get('context', default='', type=str)
         # print(context)
         msgs = []
@@ -224,7 +226,8 @@ def autocomplete():
     #     if len(temp[0]['generated_text']) - len(context) > 3:
     #         result.append(temp[0])
     #         i = i + 1
-    result = modelPipeline(context, max_length=100, num_return_sequences=3, do_sample=True, eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
+    result = modelPipeline(context, max_length=100, num_return_sequences=3, do_sample=True,
+                           eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
 
     print("Result: {}".format(result))
 
@@ -274,44 +277,47 @@ def calendar():
     # print(f'Calendar context = {context}')
     language = 'en'
     context = context.split('<SPLIT>')
+    # print("Calendar context: ", context)
     now = datetime.datetime.now()
     for line in context:
         if(len(line) > 0):
             line = re.sub(r'[^\w]', ' ', line)
             print(f'line = {line}')
-            try:
-                dt = timefhuman(line)
-                has_calendar = False
-                day = None
-                month = None
-                year = None
-                hour = None
-                minute = None
-                print(dt)
-                # If there is no date and time mentioned in the messsage
-                if(dt == []):
-                    pass
-                else:
-                    has_calendar = True
-                    year = dt.year
-                    month = dt.month
-                    day = dt.day
-                    hour = dt.hour
-                    minute = dt.minute
+            # try:
+            dt, meeting_words_list = timefhuman(line)
+            print("Dt: ", dt)
+            print("Meeting words", meeting_words_list)
+            has_calendar = False
+            day = None
+            month = None
+            year = None
+            hour = None
+            minute = None
+            # print(dt)
+            # If there is no date and time mentioned in the messsage
+            if(dt == [] or meeting_words_list == []):
+                pass
+            else:
+                has_calendar = True
+                year = dt.year
+                month = dt.month
+                day = dt.day
+                hour = dt.hour
+                minute = dt.minute
 
-                    if now > dt:
-                        if now.day == day and now.month == month and now.year == year:
-                            if hour < 12:
-                                print("........hour " + str(hour))
-                                hour += 12
-                                if hour < now.hour and minute < now.minute:
-                                    has_calendar = False
-                            else:
+                if now > dt:
+                    if now.day == day and now.month == month and now.year == year:
+                        if hour < 12:
+                            # print("........hour " + str(hour))
+                            hour += 12
+                            if hour < now.hour and minute < now.minute:
                                 has_calendar = False
                         else:
                             has_calendar = False
-            except:
-                has_calendar = False
+                    else:
+                        has_calendar = False
+            # except:
+            #     has_calendar = False
 
                 # position = context
 
