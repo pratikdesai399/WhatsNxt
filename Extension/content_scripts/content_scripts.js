@@ -517,7 +517,7 @@ function displayCalendar(vals, DOMs, context, authors, selfName) {
         selfName +
         ") and " +
         nonSelfNames +
-        ". This invite was automatically detected and created by You! &dates=" +
+        ". This invite was automatically detected and created by WhatsNxt! &dates=" +
         year +
         month +
         day +
