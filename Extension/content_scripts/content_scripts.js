@@ -215,10 +215,10 @@ function displayAutocompleteResults(words, prompts, context) {
   // $("#pprompts").off();
   $("#pprompts").remove();
   $('div[data-tab="8"]').append(
-    "<div id='pprompts' style='padding: 20px;margin: 20px; border-radius: 15px; background:#F0FFFF'></div>"
+    "<div id='pprompts' style='padding: 20px;margin: 20px 20px 10px 20px; border-radius: 15px; background:#ecffe9'></div>"
   );
   $("#pprompts").append(
-    '<div style="flex-direction: row;display: flex;"><p style="font-size: 12px; padding: 15px; font-weight: 900; text-transform: uppercase">WhatsNxt: Autocomplete Responses</p></div>'
+    '<div style="flex-direction: row;display: flex;"><p style="font-size: 12px; padding: 0px 15px 10px 5px; font-weight: 900; text-transform: uppercase">WhatsNxt: Autocomplete Responses</p></div>'
   );
 
   // Sentence
@@ -230,10 +230,14 @@ function displayAutocompleteResults(words, prompts, context) {
     p = p.split("#")[0];
     if (p.length != 0) {
       $("#pprompts").append(
-        `<p class='prompt' id="${i}" style='border-radius: 5px; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${p}</p>`
+        `<p class='prompt' id="${i}" style='border-radius: 5px; padding: 12px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${p}</p>`
       );
     }
   });
+
+  $("#pprompts").append(
+    `<p class='endrow' id="endrow" style='border-radius: 5px; padding: 0px 0px 30px 0px;border: 0px solid #000000;margin: 5px; font-size: 14px'></p>`
+  );
 
   // Words
   complete = words[0];
@@ -241,10 +245,10 @@ function displayAutocompleteResults(words, prompts, context) {
   manual = words[2];
 
   manual.forEach((w, i) => {
-    $("#pprompts").append(
+    $("#endrow").append(
       `<p class='predictmanual' id="${
         propmtLen + i
-      }" style='display:inline;float:left;inline-size: min-content; border-radius: 5px; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${
+      }" style='display:inline;float:left;inline-size: min-content; border-radius: 5px; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${
         w[0]
       }</p>`
     );
@@ -259,10 +263,10 @@ function displayAutocompleteResults(words, prompts, context) {
     console.log("Lastword : " + lastword);
     console.log("Complete word : " + w[0]);
     if (lastword.trim().localeCompare(w[0]) != 0) {
-      $("#pprompts").append(
+      $("#endrow").append(
         `<p class='complete' id="${
           propmtLen + i
-        }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${
+        }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${
           w[0]
         }</p>`
       );
@@ -272,18 +276,14 @@ function displayAutocompleteResults(words, prompts, context) {
   propmtLen = propmtLen + complete.length;
 
   predict.forEach((w, i) => {
-    $("#pprompts").append(
+    $("#endrow").append(
       `<p class='predictmanual' id="${
         propmtLen + i
-      }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 15px;border: 1px solid #000000;margin: 5px; font-size: 14px'>${
+      }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${
         w[0]
       }</p>`
     );
   });
-
-  $("#pprompts").append(
-    `<p class='endrow' id="endrow" style='border-radius: 5px; padding: 15px 15px 30px 15px;border: 0px solid #000000;margin: 5px; font-size: 14px'></p>`
-  );
 
   // words.forEach((w, i) => {
   //   $("#pprompts").append(
@@ -327,7 +327,7 @@ function displayAutocompleteResults(words, prompts, context) {
 
   const mouseoverEvent = new Event("mouseover");
   console.log("Before Dispatch : " + totalPrompts);
-  if (totalPrompts) {
+  if (document.querySelector(".prompt")) {
     document.querySelector(".prompt").dispatchEvent(mouseoverEvent);
   }
   // totalPrompts = prompts.length;
@@ -596,6 +596,11 @@ $(document).ready(function () {
 
         // console.log($('[data-tab="10"]'));
         //console.log("Event Listerner");
+        var calendar_context = getContextForCalendar();
+        var emotion_context = getContextforEmotionDetection();
+        console.log("CONTEXT: " + calendar_context);
+        var new_context = getEmotionDetectionResults(emotion_context);
+        getCalendarResults(calendar_context, new_context);
         $('[data-tab="10"]').on("keydown", function (e) {
           if (e.keyCode == 9) {
             e.stopPropagation();

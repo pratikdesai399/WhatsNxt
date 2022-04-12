@@ -173,41 +173,42 @@ def hello():
     return res
 
 
-# @app.route("/emotion")
-# def emotion():
-#     try:
-#         emotions = np.array(
-#             ['Anger', 'Happy', 'Love', 'Neutral', 'Sad', 'Surprise'])
-#         context = request.args.get('context', default='', type=str)
-#         # print(context)
-#         msgs = []
-#         context = context.split("#", 1)
-#         myname = context[0]
-#         context = context[1]
-#         print("context: ")
-#         print(context)
-#         for msg in context.split("#")[:-1]:
-#             # print(msg.split(":"))
-#             # if myname != msg.split(":")[0]:
-#             msgs.append(msg.split(":")[1])
-#         text_data = pd.DataFrame(msgs)
-#         text_data_preprocessed = data_preprocessing(text_data)
-#         result = emotion_loaded_model.predict(text_data_preprocessed)
-#         print("MESSAGES====>>> ", msgs)
+@app.route("/emotion")
+def emotion():
+    try:
+        # emotions = np.array(['Anger', 'Happy', 'Love', 'Neutral', 'Sad', 'Surprise'])
+        emotions = np.array(
+            ['😡', '😄', '❤️', '😐', '😞', '😮'])
+        context = request.args.get('context', default='', type=str)
+        # print(context)
+        msgs = []
+        context = context.split("#", 1)
+        myname = context[0]
+        context = context[1]
+        print("context: ")
+        print(context)
+        for msg in context.split("#")[:-1]:
+            # print(msg.split(":"))
+            # if myname != msg.split(":")[0]:
+            msgs.append(msg.split(":")[1])
+        text_data = pd.DataFrame(msgs)
+        text_data_preprocessed = data_preprocessing(text_data)
+        result = emotion_loaded_model.predict(text_data_preprocessed)
+        print("MESSAGES====>>> ", msgs)
 
-#         # print("REsult: ", result)
-#         # print("length; ", len(result))
-#         result_emotion = []
-#         for i in range(len(result)):
-#             result_emotion.append(emotions[result[i]])
-#         # print("Emotion Result: {}".format(result_emotion))
-#     except:
-#         result_emotion = []
+        # print("REsult: ", result)
+        # print("length; ", len(result))
+        result_emotion = []
+        for i in range(len(result)):
+            result_emotion.append(emotions[result[i]])
+        # print("Emotion Result: {}".format(result_emotion))
+    except:
+        result_emotion = []
 
-#     res = jsonify({
-#         "EMOTION": result_emotion
-#     })
-#     return res
+    res = jsonify({
+        "EMOTION": result_emotion
+    })
+    return res
 
 
 @app.route("/autocomplete")
@@ -224,7 +225,8 @@ def autocomplete():
     #     if len(temp[0]['generated_text']) - len(context) > 3:
     #         result.append(temp[0])
     #         i = i + 1
-    result = modelPipeline(context, max_length=100, num_return_sequences=3, do_sample=True, eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
+    result = modelPipeline(context, max_length=100, num_return_sequences=3, do_sample=True,
+                           eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
 
     print("Result: {}".format(result))
 
@@ -267,72 +269,75 @@ def wordcomplete():
     return res
 
 
-# @app.route("/calendar")
-# def calendar():
-#     result = []
-#     context = request.args.get('context', default='', type=str)
-#     # print(f'Calendar context = {context}')
-#     language = 'en'
-#     context = context.split('<SPLIT>')
-#     now = datetime.datetime.now()
-#     for line in context:
-#         if(len(line) > 0):
-#             line = re.sub(r'[^\w]', ' ', line)
-#             print(f'line = {line}')
-#             try:
-#                 dt = timefhuman(line)
-#                 has_calendar = False
-#                 day = None
-#                 month = None
-#                 year = None
-#                 hour = None
-#                 minute = None
-#                 print(dt)
-#                 # If there is no date and time mentioned in the messsage
-#                 if(dt == []):
-#                     pass
-#                 else:
-#                     has_calendar = True
-#                     year = dt.year
-#                     month = dt.month
-#                     day = dt.day
-#                     hour = dt.hour
-#                     minute = dt.minute
+@app.route("/calendar")
+def calendar():
+    result = []
+    context = request.args.get('context', default='', type=str)
+    # print(f'Calendar context = {context}')
+    language = 'en'
+    context = context.split('<SPLIT>')
+    # print("Calendar context: ", context)
+    now = datetime.datetime.now()
+    for line in context:
+        if(len(line) > 0):
+            line = re.sub(r'[^\w]', ' ', line)
+            print(f'line = {line}')
+            # try:
+            dt, meeting_words_list = timefhuman(line)
+            print("Dt: ", dt)
+            print("Meeting words", meeting_words_list)
+            has_calendar = False
+            day = None
+            month = None
+            year = None
+            hour = None
+            minute = None
+            # print(dt)
+            # If there is no date and time mentioned in the messsage
+            if(dt == [] or meeting_words_list == []):
+                pass
+            else:
+                has_calendar = True
+                year = dt.year
+                month = dt.month
+                day = dt.day
+                hour = dt.hour
+                minute = dt.minute
 
-#                     if now > dt:
-#                         if now.day == day and now.month == month and now.year == year:
-#                             if hour < 12:
-#                                 print("........hour " + str(hour))
-#                                 hour += 12
-#                                 if hour < now.hour and minute < now.minute:
-#                                     has_calendar = False
-#                             else:
-#                                 has_calendar = False
-#                         else:
-#                             has_calendar = False
-#             except:
-#                 has_calendar = False
+                if now > dt:
+                    if now.day == day and now.month == month and now.year == year:
+                        if hour < 12:
+                            # print("........hour " + str(hour))
+                            hour += 12
+                            if hour < now.hour and minute < now.minute:
+                                has_calendar = False
+                        else:
+                            has_calendar = False
+                    else:
+                        has_calendar = False
+            # except:
+            #     has_calendar = False
 
-#                 # position = context
+                # position = context
 
-#             jsonobject = {
-#                 "has_calendar": has_calendar,
-#                 "day": day,
-#                 "month": month,
-#                 "year": year,
-#                 "hour": hour,
-#                 "minute": minute
-#             }
-#             print("JSON OBJECT: ")
-#             print(jsonobject)
-#             result.append(jsonobject)
-#     res = jsonify({
-#         "CALENDAR": result
-#     })
+            jsonobject = {
+                "has_calendar": has_calendar,
+                "day": day,
+                "month": month,
+                "year": year,
+                "hour": hour,
+                "minute": minute
+            }
+            print("JSON OBJECT: ")
+            print(jsonobject)
+            result.append(jsonobject)
+    res = jsonify({
+        "CALENDAR": result
+    })
 
-#     print("Calendar JSON --->>>")
-#     print(res)
-#     return res
+    print("Calendar JSON --->>>")
+    print(res)
+    return res
 
 
 if __name__ == "__main__":
