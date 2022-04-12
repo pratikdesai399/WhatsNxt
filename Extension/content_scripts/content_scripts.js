@@ -1,5 +1,5 @@
 function sampleFun() {
-  console.log("SAMPLE PROMPTS");
+  //console.log("SAMPLE PROMPTS");
 }
 
 function getContextforEmotionDetection() {
@@ -9,7 +9,7 @@ function getContextforEmotionDetection() {
 
   var msgs = $(".focusable-list-item");
   msgs = msgs.slice(-10);
-  // console.log("Messages: " + msgs);
+  // //console.log("Messages: " + msgs);
 
   msgs.each(function () {
     var classes = $(this).attr("class");
@@ -22,7 +22,7 @@ function getContextforEmotionDetection() {
     }
 
     var lines = $(this).find(".copyable-text");
-    // console.log("LINES: " + lines);
+    // //console.log("LINES: " + lines);
 
     //If convesartion length is more than 2 than adding # at the end of each statement so that the model can easily predict till next #
     if (lines.length == 2) {
@@ -32,7 +32,7 @@ function getContextforEmotionDetection() {
       var message = $(lines[1]).text().trim();
       var msg = msgAuthor + " " + message + "#";
       messageDOMs.push(lines[1]);
-      // console.log(msg);
+      // //console.log(msg);
       context += msg.trim();
 
       if (type === "msg_outgoing" && myName === "") {
@@ -45,8 +45,8 @@ function getContextforEmotionDetection() {
 
   // context += myName + " " + currentMessage;
   // context = context.trim();
-  // console.log("EMOTION CONTEXT: ");
-  // console.log(context);
+  //console.log("EMOTION CONTEXT: ");
+  //console.log(context);
   new_context = myName + "#" + context;
   return [messageDOMs, new_context];
 }
@@ -84,8 +84,8 @@ function getContextForCalendar() {
       }
     }
   });
-  // console.log("calender context: ");
-  // console.log(context);
+  //console.log("calender context: ");
+  //console.log(context);
   return [context, messageDOMs, authors, myname];
 }
 
@@ -95,7 +95,7 @@ function getContextforAutocomplete() {
 
   var msgs = $(".focusable-list-item");
   msgs = msgs.slice(-5);
-  //console.log("MESSAGES: "+ msgs);
+  ////console.log("MESSAGES: "+ msgs);
 
   msgs.each(function () {
     var classes = $(this).attr("class");
@@ -108,7 +108,7 @@ function getContextforAutocomplete() {
     }
 
     var lines = $(this).find(".copyable-text");
-    //console.log("LINES: "+ lines);
+    ////console.log("LINES: "+ lines);
 
     //If convesartion length is more than 2 than adding # at the end of each statement so that the model can easily predict till next #
     if (lines.length == 2) {
@@ -132,7 +132,7 @@ function getContextforAutocomplete() {
 }
 
 function getEmotionDetectionResults(emotion_context) {
-  // console.log("Emotion Detection RESULTS");
+  // //console.log("Emotion Detection RESULTS");
   var context = emotion_context[1];
   var DOMs = emotion_context[0];
   new_context = "";
@@ -143,8 +143,8 @@ function getEmotionDetectionResults(emotion_context) {
     dataType: "json",
     data: { context: context },
     success: (res) => {
-      // console.log("Emotion done");
-      // console.log(res.EMOTION);
+      // //console.log("Emotion done");
+      //console.log(res.EMOTION);
       globalThis.new_context = displayEmotionResults(
         res.EMOTION,
         context,
@@ -152,8 +152,8 @@ function getEmotionDetectionResults(emotion_context) {
       );
     },
   });
-  // console.log("New context: ");
-  // console.log(new_context);
+  //console.log("New context: ");
+  //console.log(new_context);
   return new_context;
 }
 
@@ -162,8 +162,8 @@ function getCalendarResults(calendar_context, new_context) {
   var DOMs = calendar_context[1];
   var authors = calendar_context[2];
   var myname = calendar_context[3];
-  // console.log("Get new: ");
-  // console.log(context);
+  //console.log("Get new: ");
+  //console.log(context);
 
   $.ajax({
     url: "http://localhost:5000/calendar",
@@ -171,8 +171,8 @@ function getCalendarResults(calendar_context, new_context) {
     dataType: "json",
     data: { context: context },
     success: (d) => {
-      console.log("Calender Response: ");
-      console.log(d.CALENDAR);
+      //console.log("Calender Response: ");
+      //console.log(d.CALENDAR);
       displayCalendar(d.CALENDAR, DOMs, context, authors, myname);
     },
   });
@@ -201,8 +201,8 @@ function getAutocompleteResults(context) {
         data: { context: context },
         success: (res) => {
           autocomplete = res.AUTOCOMPLETE;
-          // console.log(autocomplete);
-          // console.log(wordcomplete);
+          //console.log(autocomplete);
+          //console.log(wordcomplete);
           displayAutocompleteResults(wordcomplete, autocomplete, context);
         },
       });
@@ -211,8 +211,7 @@ function getAutocompleteResults(context) {
 }
 
 function displayAutocompleteResults(words, prompts, context) {
-  console.log("words : ", words);
-  // $("#pprompts").off();
+  //console.log("words : ", words);
   $("#pprompts").remove();
   $('div[data-tab="8"]').append(
     "<div id='pprompts' style='padding: 20px;margin: 20px 20px 10px 20px; border-radius: 15px; background:#ecffe9'></div>"
@@ -369,7 +368,7 @@ function displayAutocompleteResults(words, prompts, context) {
     $('div[data-tab="10"]').text("");
     const lastindex = currentMessage.lastIndexOf(" ");
     currentMessage = currentMessage.slice(0, lastindex);
-    // console.log("Word Complete : " + currentMessage);
+    //console.log("Word Complete : " + currentMessage);
     currentMessage = currentMessage + " " + $(this).text();
     $('div[data-tab="10"]').focus();
     document.execCommand("insertText", false, currentMessage);
@@ -388,7 +387,7 @@ function displayAutocompleteResults(words, prompts, context) {
         if (currSelectedPrompt < 0) {
           currSelectedPrompt = totalPrompts - 1;
         }
-        // console.log("Current Prompt key(up)", currSelectedPrompt);
+        // //console.log("Current Prompt key(up)", currSelectedPrompt);
         document
           .querySelectorAll(".prompt")
           [currSelectedPrompt].dispatchEvent(mouseoverEvent);
@@ -401,7 +400,7 @@ function displayAutocompleteResults(words, prompts, context) {
         if (currSelectedPrompt >= totalPrompts) {
           currSelectedPrompt = 0;
         }
-        // console.log("Current Prompt key(down)", currSelectedPrompt);
+        // //console.log("Current Prompt key(down)", currSelectedPrompt);
         document
           .querySelectorAll(".prompt")
           [currSelectedPrompt].dispatchEvent(mouseoverEvent);
@@ -414,7 +413,7 @@ function displayAutocompleteResults(words, prompts, context) {
         document
           .getElementsByClassName("_2lMWa")[0]
           .removeEventListener("keydown", handlePrompts);
-        // console.log("Current Prompt key(escape)", currSelectedPrompt);
+        // //console.log("Current Prompt key(escape)", currSelectedPrompt);
 
         var currentMessage = $('div[data-tab="10"]').text();
         $('div[data-tab="10"]').text("");
@@ -428,7 +427,7 @@ function displayAutocompleteResults(words, prompts, context) {
         document
           .getElementsByClassName("_2lMWa")[0]
           .removeEventListener("keydown", handlePrompts);
-        // console.log("Current Prompt key(enter)", currSelectedPrompt);
+        // //console.log("Current Prompt key(enter)", currSelectedPrompt);
         document.querySelectorAll(".prompt")[currSelectedPrompt].click();
       }
     }
@@ -440,11 +439,11 @@ function displayAutocompleteResults(words, prompts, context) {
 }
 
 function displayEmotionResults(vals, context, DOMs) {
-  // console.log("In Display emotion function");
+  //console.log("In Display emotion function");
   var myname;
   var msgs = [];
-  // console.log("context: ");
-  // console.log(context);
+  //console.log("context: ");
+  //console.log(context);
   // Structure of context: @rhugaved:#Aditya Patil Jio: Movie ahe
   // 1 hr remaining#@rhugaved: Nice#@rhugaved: Enjoy#
   // So, in below split we split at first ":", which gives an array like this
@@ -452,32 +451,32 @@ function displayEmotionResults(vals, context, DOMs) {
   context = context.split(/:(.*)/s).slice(0, 2);
   myname = context[0];
   context = context[1].split("#").slice(1, -1);
-  // console.log("context: ");
-  // console.log(context);
+  //console.log("context: ");
+  //console.log(context);
 
   // for msg in context.split("#")[:-1]:
   for (let i = 0; i < context.length; i++) {
     msgs.push(context[i].split(":")[1]);
   }
-  // console.log("Messages: ");
-  // console.log(msgs);
+  //console.log("Messages: ");
+  //console.log(msgs);
   var new_context = "";
 
   for (var i = 0; i < vals.length; i++) {
     var temp = vals[i];
     var message = msgs[i];
     $(DOMs[i]).text("");
-    // console.log("<span>" + message + " #" + temp + "#" + "</span>");
+    //console.log("<span>" + message + " #" + temp + "#" + "</span>");
     new_context += message + " #" + temp + "#" + "<SPLIT>";
     $(DOMs[i]).append("<span>" + message + " #" + temp + "#" + "</span>");
   }
-  // console.log("emotion context");
-  // console.log(new_context);
+  //console.log("emotion context");
+  //console.log(new_context);
   return new_context;
 }
 
 function displayCalendar(vals, DOMs, context, authors, selfName) {
-  // console.log("In Display Calendar function");
+  // //console.log("In Display Calendar function");
   var context = context.split("<SPLIT>");
   authors = [...new Set(authors)];
   var nonSelfNames = "";
@@ -488,14 +487,14 @@ function displayCalendar(vals, DOMs, context, authors, selfName) {
     nonSelfNames = authors[0];
   }
 
-  // console.log(selfName, "-|-", nonSelfNames);
-  // console.log(vals, vals.length);
+  //console.log(selfName, "-|-", nonSelfNames);
+  //console.log(vals, vals.length);
 
   for (var i = 0; i < vals.length; i++) {
     var temp = vals[i];
-    // console.log(context[i], temp);
+    //console.log(context[i], temp);
     if (temp.has_calendar) {
-      // console.log("In if");
+      //console.log("In if");
       var message = context[i];
       var day = String(temp.day);
       if (parseInt(day) < 10) {
@@ -515,10 +514,10 @@ function displayCalendar(vals, DOMs, context, authors, selfName) {
         minute = "0" + minute;
       }
       // var sec = "0";
-      // console.log("Hour: ");
-      // console.log(hour);
-      // console.log(minute);
-      // console.log(String(parseInt(minute) + 30));
+      //console.log("Hour: ");
+      //console.log(hour);
+      //console.log(minute);
+      //console.log(String(parseInt(minute) + 30));
       // console.log(
       //   year +
       //     month +
@@ -544,7 +543,7 @@ function displayCalendar(vals, DOMs, context, authors, selfName) {
         selfName +
         ") and " +
         nonSelfNames +
-        ". This invite was automatically detected and created by You! &dates=" +
+        ". This invite was automatically detected and created by WhatsNxt! &dates=" +
         year +
         month +
         day +
@@ -560,7 +559,7 @@ function displayCalendar(vals, DOMs, context, authors, selfName) {
         String(parseInt(minute) + 30) +
         "00";
 
-      // console.log(link);
+      //console.log(link);
       $(DOMs[i]).text("");
       $(DOMs[i]).append(
         "<span>" +
@@ -573,32 +572,32 @@ function displayCalendar(vals, DOMs, context, authors, selfName) {
           // message.slice(temp.end) +
           "</span>"
       );
-      // console.log("OUTSDIE");
+      //console.log("OUTSDIE");
     }
   }
 }
 
 $(document).ready(function () {
   var chat_name, newChatName;
-  console.log("WhatsNxt?");
+  //console.log("WhatsNxt?");
   tabKeyPress = false;
   totalPrompts = 0;
   currSelectedPrompt = 0;
 
   var interval = setInterval(function () {
-    // console.log("Loading...");
+    // //console.log("Loading...");
     if (tabKeyPress == false) {
       if ($('[data-tab="10"]').length > 0) {
         chat_name =
           document.getElementsByClassName("_21nHd")[0].childNodes[0]
             .childNodes[0].data;
-        //console.log("CHAT NAME IN INNER LOOP: "+chat_name);
+        ////console.log("CHAT NAME IN INNER LOOP: "+chat_name);
 
-        // console.log($('[data-tab="10"]'));
-        //console.log("Event Listerner");
+        // //console.log($('[data-tab="10"]'));
+        ////console.log("Event Listerner");
         var calendar_context = getContextForCalendar();
         var emotion_context = getContextforEmotionDetection();
-        console.log("CONTEXT: " + calendar_context);
+        //console.log("CONTEXT: " + calendar_context);
         var new_context = getEmotionDetectionResults(emotion_context);
         getCalendarResults(calendar_context, new_context);
         $('[data-tab="10"]').on("keydown", function (e) {
@@ -606,9 +605,9 @@ $(document).ready(function () {
             e.stopPropagation();
             e.preventDefault();
             //tabKeyPress = true;
-            //console.log(tabKeyPress);
+            ////console.log(tabKeyPress);
             $('[data-tab="10"]').blur();
-            // console.log("TAB KEY PRESSED");
+            // //console.log("TAB KEY PRESSED");
             //Generate Prompts
             //sampleFun();
             var context = getContextforAutocomplete();
@@ -624,19 +623,19 @@ $(document).ready(function () {
 
         tabKeyPress = true;
 
-        //console.log("Aha Tab key pressed is true now")
+        ////console.log("Aha Tab key pressed is true now")
         //clearInterval(interval);
       }
     } else {
       newChatName =
         document.getElementsByClassName("_21nHd")[0].childNodes[0].childNodes[0]
           .data;
-      //console.log("NEW CHAT NAME: "+newChatName);
-      //console.log("CHAT NAME: "+chat_name);
+      ////console.log("NEW CHAT NAME: "+newChatName);
+      ////console.log("CHAT NAME: "+chat_name);
       if (newChatName != chat_name) {
-        //console.log(chat_name);
-        //console.log(newChatName);
-        // console.log("UNBINDING NOW");
+        ////console.log(chat_name);
+        ////console.log(newChatName);
+        // //console.log("UNBINDING NOW");
         $('[data-tab="10"]').off("keydown");
         tabKeyPress = false;
       }
