@@ -305,17 +305,25 @@ def calendar():
                 hour = dt.hour
                 minute = dt.minute
 
-                if now > dt:
-                    if now.day == day and now.month == month and now.year == year:
-                        if hour < 12:
-                            # print("........hour " + str(hour))
-                            hour += 12
-                            if hour < now.hour and minute < now.minute:
+                # The first regular expression evaluates to True if strings like 9 am or 10pm etc. are not found in the line
+                # The second regex evaluates to True if only numbers are present like 9 or 10 etc. This is to avo   id adding 12 Hrs if words like morning, noon are present.
+                if re.search("(\d{1}\s*(am|pm))|(\d{2}\s*(am|pm))", line) is None and re.search("(\d{1})|(\d{2})", line) is not None:
+                    if now > dt:
+                        if now.day == day and now.month == month and now.year == year:
+                            if hour < 12:
+                                # print("........hour " + str(hour))
+                                hour += 12
+                                if hour < now.hour and minute < now.minute:
+                                    has_calendar = False
+                            else:
                                 has_calendar = False
                         else:
                             has_calendar = False
                     else:
                         has_calendar = False
+                elif now > dt:
+                    has_calendar = False
+
             # except:
             #     has_calendar = False
 
