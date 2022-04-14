@@ -47,6 +47,7 @@ MEETING_WORDS = (
     'mtg',
     'convent',
     'call',
+    'calls',
     'assembly',
     'class',
     'lecture',

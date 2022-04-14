@@ -181,21 +181,22 @@ def emotion():
         emotions = np.array(
             ['😡', '😄', '❤️', '😐', '😞', '😮'])
         context = request.args.get('context', default='', type=str)
-        # print(context)
+        # print("EMOTION CONTEXT: ", context)
         msgs = []
-        context = context.split("#", 1)
-        myname = context[0]
-        context = context[1]
-        print("context: ")
-        print(context)
-        for msg in context.split("#")[:-1]:
+        # To split at the last occurance, use rsplit instead of split
+        context = context.rsplit("#", 1)
+        myname = context[1]
+        context = context[0]
+        # print("EMOTION context: ")
+        # print(context)
+        for msg in context.split("#")[:]:
             # print(msg.split(":"))
             # if myname != msg.split(":")[0]:
             msgs.append(msg.split(":")[1])
         text_data = pd.DataFrame(msgs)
         text_data_preprocessed = data_preprocessing(text_data)
         result = emotion_loaded_model.predict(text_data_preprocessed)
-        print("MESSAGES====>>> ", msgs)
+        # print("MESSAGES====>>> ", msgs)
 
         # print("REsult: ", result)
         # print("length; ", len(result))
@@ -209,6 +210,8 @@ def emotion():
     res = jsonify({
         "EMOTION": result_emotion
     })
+    print("EMOTION RESULT: ", result_emotion)
+    print()
     return res
 
 
@@ -274,18 +277,19 @@ def wordcomplete():
 def calendar():
     result = []
     context = request.args.get('context', default='', type=str)
-    # print(f'Calendar context = {context}')
+    print(f'Calendar context = {context}')
     language = 'en'
     context = context.split('<SPLIT>')
-    # print("Calendar context: ", context)
+    print("Calendar context: ", context)
     now = datetime.datetime.now()
     for line in context:
         if(len(line) > 0):
+            print(f'line = {line}')
             line = re.sub(r'[^\w]', ' ', line)
             print(f'line = {line}')
             # try:
             dt, meeting_words_list = timefhuman(line)
-            print("Dt: ", dt)
+            print("Dt: ", type(dt))
             print("Meeting words", meeting_words_list)
             has_calendar = False
             day = None
@@ -295,7 +299,7 @@ def calendar():
             minute = None
             # print(dt)
             # If there is no date and time mentioned in the messsage
-            if(dt == [] or meeting_words_list == []):
+            if(dt == [] or type(dt) is tuple or meeting_words_list == []):
                 pass
             else:
                 has_calendar = True
@@ -307,8 +311,9 @@ def calendar():
 
                 # The first regular expression evaluates to True if strings like 9 am or 10pm etc. are not found in the line
                 # The second regex evaluates to True if only numbers are present like 9 or 10 etc. This is to avo   id adding 12 Hrs if words like morning, noon are present.
-                if re.search("(\d{1}\s*(am|pm))|(\d{2}\s*(am|pm))", line) is None and re.search("(\d{1})|(\d{2})", line) is not None:
-                    if now > dt:
+                if now > dt:
+                    if re.search("(\d{1}\s*(am|pm))|(\d{2}\s*(am|pm))", line) is None and re.search("(\d{1})|(\d{2})", line) is not None:
+
                         if now.day == day and now.month == month and now.year == year:
                             if hour < 12:
                                 # print("........hour " + str(hour))
@@ -321,8 +326,6 @@ def calendar():
                             has_calendar = False
                     else:
                         has_calendar = False
-                elif now > dt:
-                    has_calendar = False
 
             # except:
             #     has_calendar = False

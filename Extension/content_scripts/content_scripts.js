@@ -48,19 +48,24 @@ function getContextforEmotionDetection() {
   //console.log("EMOTION CONTEXT: ");
   //console.log(context);
   new_context = myName + "#" + context;
+  // console.log("EMOTION: ", new_context);
   return [messageDOMs, new_context];
 }
 
-function getContextForCalendar() {
+function getContext() {
   var context = "";
   var messageDOMs = [];
   var authors = [];
   var myname = "";
+
   var msgs = $(".focusable-list-item");
   msgs = msgs.slice(-10);
+
+  console.log("IN CONTEXT: ");
   msgs.each(function () {
     var classes = $(this).attr("class");
     var type = "";
+
     if (classes.includes("message-in")) {
       type = "msg_incoming";
     } else if (classes.includes("message-out")) {
@@ -68,14 +73,22 @@ function getContextForCalendar() {
     }
 
     var texts = $(this).find(".copyable-text");
+
     if (texts.length == 2) {
       var metadata = $(texts[0]).data("prePlainText");
-      var author = metadata.split("]")[1].trim().slice(0, -1);
+      // var author = metadata.split("]")[1].trim().slice(0, -1);
+      var author = metadata.split("]")[1].trim();
       var message = $(texts[1]).text().trim();
+      // console.log(message);
       messageDOMs.push(texts[1]);
       // message = message.replaceAll('?', '<Q>')
       // message = message.replaceAll('&', '<AND>')
-      context += message + "<SPLIT>";
+      // Old context for calendar format
+      // context += message + "<SPLIT>";
+
+      // Merging context functions
+      context += author + " " + message + "#";
+
       if (type === "msg_outgoing" && myname === "") {
         myname = author;
       }
@@ -84,8 +97,17 @@ function getContextForCalendar() {
       }
     }
   });
+
+  currentMessage = $('div[data-tab="10"]').text();
+
+  context += myname + " " + currentMessage;
+  context = context.trim();
+
   //console.log("calender context: ");
   //console.log(context);
+  console.log("CALENDAR: ", context);
+  console.log("Authors: ", authors);
+  console.log("Myname: ", myname);
   return [context, messageDOMs, authors, myname];
 }
 
@@ -128,13 +150,15 @@ function getContextforAutocomplete() {
 
   context += myName + " " + currentMessage;
   context = context.trim();
+  console.log("AUTOCOMPLETE: ", context);
   return context;
 }
 
 function getEmotionDetectionResults(emotion_context) {
+  // Emotion context format: [context, messageDOMs, authors, myname]
   // //console.log("Emotion Detection RESULTS");
-  var context = emotion_context[1];
-  var DOMs = emotion_context[0];
+  var context = emotion_context[0];
+  var DOMs = emotion_context[1];
   new_context = "";
   $.ajax({
     url: "http://localhost:5000/emotion",
@@ -143,8 +167,8 @@ function getEmotionDetectionResults(emotion_context) {
     dataType: "json",
     data: { context: context },
     success: (res) => {
-      // //console.log("Emotion done");
-      //console.log(res.EMOTION);
+      console.log("Emotion done");
+      console.log(res.EMOTION);
       globalThis.new_context = displayEmotionResults(
         res.EMOTION,
         context,
@@ -158,12 +182,13 @@ function getEmotionDetectionResults(emotion_context) {
 }
 
 function getCalendarResults(calendar_context, new_context) {
+  // calendar_context = [context, messageDOMs, authors, myname]
   var context = new_context;
   var DOMs = calendar_context[1];
   var authors = calendar_context[2];
   var myname = calendar_context[3];
-  //console.log("Get new: ");
-  //console.log(context);
+  console.log("Get new: ");
+  console.log(context);
 
   $.ajax({
     url: "http://localhost:5000/calendar",
@@ -442,36 +467,46 @@ function displayEmotionResults(vals, context, DOMs) {
   //console.log("In Display emotion function");
   var myname;
   var msgs = [];
-  //console.log("context: ");
-  //console.log(context);
+  // console.log("context: ");
+  // console.log(context);
   // Structure of context: @rhugaved:#Aditya Patil Jio: Movie ahe
   // 1 hr remaining#@rhugaved: Nice#@rhugaved: Enjoy#
   // So, in below split we split at first ":", which gives an array like this
   // ["@rhugaved", "#Aditya Pa...", ""], so we slice to get the first 2 elements
-  context = context.split(/:(.*)/s).slice(0, 2);
-  myname = context[0];
-  context = context[1].split("#").slice(1, -1);
-  //console.log("context: ");
-  //console.log(context);
+  // context = context.split(/:(.*)/s).slice(0, 2);
+  // myname = context[0];
+  // context = context[1].split("#").slice(1, -1);
+
+  // For new combined context format:
+  split = context.match(/((.|\n)*)\#(.|\n)*/);
+  context = split[1];
+  // console.log(context);
+  myname = split[2];
+  context = context.split("#");
+
+  // console.log("displayEmotionResults context: ");
+  // console.log(context);
 
   // for msg in context.split("#")[:-1]:
   for (let i = 0; i < context.length; i++) {
     msgs.push(context[i].split(":")[1]);
   }
-  //console.log("Messages: ");
-  //console.log(msgs);
+  // console.log("Messages: ");
+  // console.log(msgs);
   var new_context = "";
 
+  // console.log("IN DISPLAY EMOTION: ");
   for (var i = 0; i < vals.length; i++) {
     var temp = vals[i];
     var message = msgs[i];
+    // console.log(message + " #" + temp + "#");
     $(DOMs[i]).text("");
-    //console.log("<span>" + message + " #" + temp + "#" + "</span>");
+    // console.log("<span>" + message + " #" + temp + "#" + "</span>");
     new_context += message + " #" + temp + "#" + "<SPLIT>";
     $(DOMs[i]).append("<span>" + message + " #" + temp + "#" + "</span>");
   }
-  //console.log("emotion context");
-  //console.log(new_context);
+  // console.log("emotion context");
+  // console.log(new_context);
   return new_context;
 }
 
@@ -488,7 +523,9 @@ function displayCalendar(vals, DOMs, context, authors, selfName) {
   }
 
   //console.log(selfName, "-|-", nonSelfNames);
-  //console.log(vals, vals.length);
+  // console.log("DISPLAY CALENDAR: ");
+  // console.log(vals, vals.length);
+  console.log(context);
 
   for (var i = 0; i < vals.length; i++) {
     var temp = vals[i];
@@ -595,11 +632,13 @@ $(document).ready(function () {
 
         // //console.log($('[data-tab="10"]'));
         ////console.log("Event Listerner");
-        var calendar_context = getContextForCalendar();
-        var emotion_context = getContextforEmotionDetection();
+
+        // Format of returned context: [context, messageDOMs, authors, myname]
+        var context = getContext();
+        // var emotion_context = getContextforEmotionDetection();
         //console.log("CONTEXT: " + calendar_context);
-        var new_context = getEmotionDetectionResults(emotion_context);
-        getCalendarResults(calendar_context, new_context);
+        var new_context = getEmotionDetectionResults(context);
+        getCalendarResults(context, new_context);
         $('[data-tab="10"]').on("keydown", function (e) {
           if (e.keyCode == 9) {
             e.stopPropagation();
@@ -610,12 +649,14 @@ $(document).ready(function () {
             // //console.log("TAB KEY PRESSED");
             //Generate Prompts
             //sampleFun();
-            var context = getContextforAutocomplete();
-            var calendar_context = getContextForCalendar();
-            var emotion_context = getContextforEmotionDetection();
+            // var context = getContextforAutocomplete();
+
+            // Format of returned context: [context, messageDOMs, authors, myname]
+            var context = getContext();
+            // var emotion_context = getContextforEmotionDetection();
             // console.log("CONTEXT: " + calendar_context);
-            var new_context = getEmotionDetectionResults(emotion_context);
-            getCalendarResults(calendar_context, new_context);
+            var new_context = getEmotionDetectionResults(context);
+            getCalendarResults(context, new_context);
             currSelectedPrompt = 0;
             getAutocompleteResults(context);
           }

@@ -234,6 +234,7 @@ def convert_time_of_day(tokens):
             ('afternoon', [TimeToken(3, 'pm')]),
             ('evening', [TimeToken(6, 'pm')]),
             ('night', [TimeToken(9, 'pm')]),
+            ('tonight', [TimeToken(9, 'pm')]),
             ('midnight', [TimeToken(12, 'am')])):
         if keyword in temp_tokens:
             index = temp_tokens.index(keyword)
