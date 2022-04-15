@@ -26,11 +26,22 @@ import re
 import json
 import sys
 from nltk.corpus import brown
-# from nltk.corpus import reuters
+from nltk.corpus import gutenberg
+from nltk.corpus import semcor
+from nltk.corpus import nps_chat
+from nltk.corpus import reuters
+from nltk.corpus import conll2000
+from nltk.corpus import movie_reviews
 import nltk
 # from nltk.corpus import PlaintextCorpusReader
 
-# nltk.download('brown')
+nltk.download('brown')
+nltk.download('reuters')
+nltk.download('nps_chat')
+nltk.download('semcor')
+nltk.download('gutenberg')
+nltk.download('conll2000')
+nltk.download('movie_reviews')
 
 
 def data_preprocessing(text_data):
@@ -129,6 +140,13 @@ def incomplete_pred(words, n):
 
 
 tokens = brown.words()
+tokens += reuters.words()
+tokens += nps_chat.words()
+# tokens += semcor.words()
+tokens += gutenberg.words()
+# tokens += conll2000.words()
+tokens += movie_reviews.words()
+
 bgs_freq = get_bigram_freq(tokens)
 tgs_freq = get_trigram_freq(tokens)
 # print(bgs_freq)
@@ -146,15 +164,26 @@ def worker(string, work):
     # print('\n')
     if work == 'pred':
         if n == 1:
-            print(bgs_freq[(string)].most_common(5), file=sys.stderr)
-
-            return bgs_freq[(string)].most_common(5)
+            bgs = bgs_freq[(string)].most_common(3)
+            arr = []
+            for s, i in bgs:
+                s = re.sub(r'[!*)@#%(&$_^\'\";:]', '', s)
+                if len(s) > 0:
+                    arr.append((s, i))
+            print(arr, file=sys.stderr)
+            return arr
 
         elif n > 1:
+            arr = []
+            tgs = tgs_freq[(words[n-2], words[n-1])].most_common(3)
+            for s, i in tgs:
+                s = re.sub(r'[!*)@#%(&$_^\'\";:]', '', s)
+                if len(s) > 0:
+                    arr.append((s, i))
             print(tgs_freq[(words[n-2], words[n-1])
-                           ].most_common(5), file=sys.stderr)
+                           ].most_common(3), file=sys.stderr)
+            return arr
 
-            return tgs_freq[(words[n-2], words[n-1])].most_common(5)
     else:
         print(incomplete_pred(words, n), file=sys.stderr)
         return incomplete_pred(words, n)
@@ -218,6 +247,11 @@ def emotion():
 @app.route("/autocomplete")
 def autocomplete():
     context = request.args.get('context', default='', type=str)
+    # new_context = context.split("##")[-6:]
+    # context = ""
+    # for c in new_context:
+    #     context += c
+
     # if(len(context) > 90) :
     #     context = context[-90:]
     print("Context len : ", len(context))
@@ -243,8 +277,13 @@ def autocomplete():
 @app.route("/wordcomplete")
 def wordcomplete():
     context = request.args.get('context', default="", type=str)
+    print()
+    print("Word Complete ORIGINAL context: ", context)
     context = context.split("#")[-1].split(":")[-1]
     print("Context length : ", len(context))
+    print("Word COmplete context: ", context)
+    print()
+
     complete = []
     predict = []
     manual = []
@@ -264,7 +303,10 @@ def wordcomplete():
     #         result = worker(context, 'prod')
     # else:
     #     result = [["Hello", 1], ["Hi", 2]]
-    # print(result)
+    print("COmplete: ", complete)
+    print("predict: ", predict)
+    print("manual: ", manual)
+
     res = jsonify({
         "COMPLETE": complete,
         "PREDICT": predict,

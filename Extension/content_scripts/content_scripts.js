@@ -61,7 +61,7 @@ function getContext() {
   var msgs = $(".focusable-list-item");
   msgs = msgs.slice(-10);
 
-  console.log("IN CONTEXT: ");
+  // console.log("IN CONTEXT: ");
   msgs.each(function () {
     var classes = $(this).attr("class");
     var type = "";
@@ -79,6 +79,10 @@ function getContext() {
       // var author = metadata.split("]")[1].trim().slice(0, -1);
       var author = metadata.split("]")[1].trim();
       var message = $(texts[1]).text().trim();
+      // console.log("PRINGTING MESSAGE: ----->");
+      // console.log($(texts[1]).text());
+      // console.log(message);
+
       // console.log(message);
       messageDOMs.push(texts[1]);
       // message = message.replaceAll('?', '<Q>')
@@ -103,11 +107,17 @@ function getContext() {
   context += myname + " " + currentMessage;
   context = context.trim();
 
+  // Trim all the whitespce at the end of the message, but keep one whitespce that is needed for word complete to work
+  if (/\s$/.test(currentMessage)) {
+    console.log("SPACE FOUND");
+    context += " ";
+  }
+
   //console.log("calender context: ");
   //console.log(context);
-  console.log("CALENDAR: ", context);
-  console.log("Authors: ", authors);
-  console.log("Myname: ", myname);
+  // console.log("CALENDAR: ", context);
+  // console.log("Authors: ", authors);
+  // console.log("Myname: ", myname);
   return [context, messageDOMs, authors, myname];
 }
 
@@ -203,6 +213,29 @@ function getCalendarResults(calendar_context, new_context) {
   });
 }
 
+function getWordCompleteResults(context, key_pressed) {
+  console.log("Ajax context: ", context);
+  $.ajax({
+    url: "http://localhost:5000/wordcomplete",
+    crossDomain: true,
+    headers: {
+      "Access-Control-Allow-Origin": "http://localhost:5000/",
+    },
+    dataType: "json",
+    data: { context: context },
+    success: (res) => {
+      wordcomplete = [res.COMPLETE, res.PREDICT, res.MANUAL];
+      autocomplete = [];
+      displayAutocompleteResults(
+        wordcomplete,
+        autocomplete,
+        context,
+        key_pressed
+      );
+    },
+  });
+}
+
 function getAutocompleteResults(context) {
   $.ajax({
     url: "http://localhost:5000/wordcomplete",
@@ -223,10 +256,12 @@ function getAutocompleteResults(context) {
           "Access-Control-Allow-Origin": "http://localhost:5000/",
         },
         dataType: "json",
-        data: { context: context },
+        data: { context: context.trim() },
         success: (res) => {
           autocomplete = res.AUTOCOMPLETE;
-          //console.log(autocomplete);
+          console.log("autocomplete: --->>>");
+
+          console.log(autocomplete);
           //console.log(wordcomplete);
           displayAutocompleteResults(wordcomplete, autocomplete, context);
         },
@@ -235,7 +270,15 @@ function getAutocompleteResults(context) {
   });
 }
 
-function displayAutocompleteResults(words, prompts, context) {
+function displayAutocompleteResults(words, prompts, context, key_pressed) {
+  console.log("WORD COMPLETE RESULTS: ");
+  console.log("CONTEXT: ", context);
+  console.log("res.COMPLETE, res.PREDICT, res.MANUAL");
+  console.log("Complete: ", words[0]);
+  console.log("Predict: ", words[1]);
+  console.log("Manual: ", words[2]);
+  console.log("Key_pressed: ", key_pressed);
+
   //console.log("words : ", words);
   $("#pprompts").remove();
   $('div[data-tab="8"]').append(
@@ -268,46 +311,77 @@ function displayAutocompleteResults(words, prompts, context) {
   predict = words[1];
   manual = words[2];
 
-  manual.forEach((w, i) => {
-    $("#endrow").append(
-      `<p class='predictmanual' id="${
-        propmtLen + i
-      }" style='display:inline;float:left;inline-size: min-content; border-radius: 5px; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${
-        w[0]
-      }</p>`
-    );
-  });
+  var i = 0;
+  var pred_complete = 0;
+  // We have 3 word lists: Manual, complete and predict. So which to display first is determined by the key pressed.
+  // If space(32) is pressed, then predict list is displayed first followed by complete and finally manual.
+  // In predict if, we make key_pressed as 1, so that we can display complete next and in complete we make it 0 to display the manual if present
+  while (i < 3) {
+    i += 1;
+    if (key_pressed == 0) {
+      key_pressed = -1;
+      console.log("IN MANUAL");
 
-  propmtLen = propmtLen + manual.length;
+      manual.forEach((w, i) => {
+        $("#endrow").append(
+          `<p class='predictmanual' id="${
+            propmtLen + i
+          }" style='display:inline;float:left;inline-size: min-content; border-radius: 5px; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${
+            w[0]
+          }</p>`
+        );
+      });
 
-  complete.forEach((w, i) => {
-    let currentMessage = $('div[data-tab="10"]').text().trim();
-    let lastindex = currentMessage.lastIndexOf(" ");
-    let lastword = currentMessage.slice(lastindex, currentMessage.length);
-    console.log("Lastword : " + lastword);
-    console.log("Complete word : " + w[0]);
-    if (lastword.trim().localeCompare(w[0]) != 0) {
-      $("#endrow").append(
-        `<p class='complete' id="${
-          propmtLen + i
-        }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${
-          w[0]
-        }</p>`
-      );
+      propmtLen = propmtLen + manual.length;
+    } else if (key_pressed != 32 && key_pressed != 0 && key_pressed != -1) {
+      console.log("IN COMPLETE");
+      if (pred_complete) {
+        key_pressed = 0;
+      } else {
+        key_pressed = 32;
+        pred_complete = 1;
+      }
+
+      complete.forEach((w, i) => {
+        let currentMessage = $('div[data-tab="10"]').text().trim();
+        let lastindex = currentMessage.lastIndexOf(" ");
+        let lastword = currentMessage.slice(lastindex, currentMessage.length);
+        console.log("Lastword : " + lastword);
+        console.log("Complete word : " + w[0]);
+        if (lastword.trim().localeCompare(w[0]) != 0) {
+          $("#endrow").append(
+            `<p class='complete' id="${
+              propmtLen + i
+            }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${
+              w[0]
+            }</p>`
+          );
+        }
+      });
+
+      propmtLen = propmtLen + complete.length;
+    } else if (key_pressed == 32) {
+      console.log("IN PREDICT");
+
+      if (pred_complete) {
+        key_pressed = 0;
+      } else {
+        pred_complete = 1;
+        key_pressed = 1;
+      }
+      predict.forEach((w, i) => {
+        $("#endrow").append(
+          `<p class='predictmanual' id="${
+            propmtLen + i
+          }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${
+            w[0]
+          }</p>`
+        );
+      });
+    } else if (key_pressed == -1) {
+      continue;
     }
-  });
-
-  propmtLen = propmtLen + complete.length;
-
-  predict.forEach((w, i) => {
-    $("#endrow").append(
-      `<p class='predictmanual' id="${
-        propmtLen + i
-      }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${
-        w[0]
-      }</p>`
-    );
-  });
+  }
 
   // words.forEach((w, i) => {
   //   $("#pprompts").append(
@@ -646,7 +720,7 @@ $(document).ready(function () {
             //tabKeyPress = true;
             ////console.log(tabKeyPress);
             $('[data-tab="10"]').blur();
-            // //console.log("TAB KEY PRESSED");
+            console.log("TAB KEY PRESSED");
             //Generate Prompts
             //sampleFun();
             // var context = getContextforAutocomplete();
@@ -658,7 +732,33 @@ $(document).ready(function () {
             var new_context = getEmotionDetectionResults(context);
             getCalendarResults(context, new_context);
             currSelectedPrompt = 0;
-            getAutocompleteResults(context);
+            getAutocompleteResults(context[0]);
+          } else if (
+            (e.keyCode >= 65 && e.keyCode <= 90) ||
+            (e.keyCode >= 97 && e.keyCode <= 122) ||
+            e.keyCode == 32 ||
+            e.keyCode == 8
+          ) {
+            key_pressed = e.keyCode;
+            // On a keypress, the pressed key is not included in the context, so we need to add that char in the context.
+            // So, first we convert the keycode to char
+            var last_char = String.fromCharCode(key_pressed).toLowerCase();
+
+            console.log("KEY PRESSED");
+            var context = getContext();
+            console.log(context[0]);
+            console.log("LAst char: ", last_char);
+
+            // key_pressed == 8 is for backspace, so, for backspace, we remove the last char
+            if (key_pressed != 8) {
+              context[0] = context[0] + last_char;
+              console.log(context[0]);
+            } else {
+              context[0] = context[0].slice(0, -1);
+              console.log(context[0]);
+            }
+
+            getWordCompleteResults(context[0], key_pressed);
           }
         });
 
