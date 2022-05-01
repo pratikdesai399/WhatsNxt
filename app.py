@@ -263,7 +263,7 @@ def autocomplete():
     #     if len(temp[0]['generated_text']) - len(context) > 3:
     #         result.append(temp[0])
     #         i = i + 1
-    result = modelPipeline(context, max_length=100, num_return_sequences=3, do_sample=True,
+    result = modelPipeline(context, max_length=150, num_return_sequences=3, do_sample=True,
                            eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
 
     print("Result: {}".format(result))

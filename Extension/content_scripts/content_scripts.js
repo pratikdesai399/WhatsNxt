@@ -59,7 +59,7 @@ function getContext() {
   var myname = "";
 
   var msgs = $(".focusable-list-item");
-  msgs = msgs.slice(-10);
+  msgs = msgs.slice(-5);
 
   // console.log("IN CONTEXT: ");
   msgs.each(function () {
@@ -739,12 +739,12 @@ $(document).ready(function () {
       console.log("emotion_call_flag == true");
       emotion_call_flag = false;
       // Format of returned context: [context, messageDOMs, authors, myname]
-      var context = getContext();
+      // var context = getContext();
       // var emotion_context = getContextforEmotionDetection();
       //console.log("CONTEXT: " + calendar_context);
       console.log("Calling Emotion 1");
-      var new_context = getEmotionDetectionResults(context);
-      getCalendarResults(context, new_context);
+      // var new_context = getEmotionDetectionResults(context);
+      // getCalendarResults(context, new_context);
     }
     if (tabKeyPress == false) {
       // console.log("INSIDE Tab key");
@@ -782,9 +782,10 @@ $(document).ready(function () {
             // console.log("CONTEXT: " + calendar_context);
             console.log("Calling Emotion 2");
 
-            var new_context = getEmotionDetectionResults(context);
-            getCalendarResults(context, new_context);
+            // var new_context = getEmotionDetectionResults(context);
+            // getCalendarResults(context, new_context);
             currSelectedPrompt = 0;
+            console.log(context[0]);
             getAutocompleteResults(context[0]);
           } else if (
             (e.keyCode >= 65 && e.keyCode <= 90) ||
