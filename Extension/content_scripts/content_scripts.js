@@ -313,6 +313,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
 
   var i = 0;
   var pred_complete = 0;
+  var id_count = 0;
   // We have 3 word lists: Manual, complete and predict. So which to display first is determined by the key pressed.
   // If space(32) is pressed, then predict list is displayed first followed by complete and finally manual.
   // In predict if, we make key_pressed as 1, so that we can display complete next and in complete we make it 0 to display the manual if present
@@ -324,12 +325,9 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
 
       manual.forEach((w, i) => {
         $("#endrow").append(
-          `<p class='predictmanual' id="${
-            propmtLen + i
-          }" style='display:inline;float:left;inline-size: min-content; border-radius: 5px; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${
-            w[0]
-          }</p>`
+          `<p class='predictmanual' id="w${id_count}" style='display:inline;float:left;inline-size: min-content; border-radius: 5px; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${w[0]}</p>`
         );
+        id_count += 1;
       });
 
       propmtLen = propmtLen + manual.length;
@@ -350,12 +348,9 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
         console.log("Complete word : " + w[0]);
         if (lastword.trim().localeCompare(w[0]) != 0) {
           $("#endrow").append(
-            `<p class='complete' id="${
-              propmtLen + i
-            }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${
-              w[0]
-            }</p>`
+            `<p class='complete' id="w${id_count}" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${w[0]}</p>`
           );
+          id_count += 1;
         }
       });
 
@@ -371,16 +366,14 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
       }
       predict.forEach((w, i) => {
         $("#endrow").append(
-          `<p class='predictmanual' id="${
-            propmtLen + i
-          }" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${
-            w[0]
-          }</p>`
+          `<p class='predictmanual' id="w${id_count}" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${w[0]}</p>`
         );
+        id_count += 1;
       });
     } else if (key_pressed == -1) {
       continue;
     }
+    totalWords = i;
   }
 
   // words.forEach((w, i) => {
@@ -482,37 +475,80 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
       if (e.keyCode === 38) {
         e.preventDefault();
         e.stopPropagation();
-        currSelectedPrompt -= 1;
-        if (currSelectedPrompt < 0) {
-          currSelectedPrompt = totalPrompts - 1;
+        isSelect = true;
+        if (isAutoPrompt) {
+          currSelectedPrompt -= 1;
+          if (currSelectedPrompt < 0) {
+            currSelectedPrompt = totalPrompts - 1;
+          }
+          //console.log("Current Prompt key(up)", currSelectedPrompt);
+          document
+            .querySelectorAll(".prompt")
+            [currSelectedPrompt].dispatchEvent(mouseoverEvent);
         }
-        // //console.log("Current Prompt key(up)", currSelectedPrompt);
-        document
-          .querySelectorAll(".prompt")
-          [currSelectedPrompt].dispatchEvent(mouseoverEvent);
       }
       //Down arrow
-      else if (e.keyCode === 40) {
+      else if (e.keyCode === 40 || e.keyCode == 9) {
         e.preventDefault();
         e.stopPropagation();
-        currSelectedPrompt += 1;
-        if (currSelectedPrompt >= totalPrompts) {
-          currSelectedPrompt = 0;
+        isSelect = true;
+        if (isAutoPrompt) {
+          currSelectedPrompt += 1;
+          if (currSelectedPrompt >= totalPrompts) {
+            currSelectedPrompt = 0;
+          }
+          //console.log("Current Prompt key(down)", currSelectedPrompt);
+          document
+            .querySelectorAll(".prompt")
+            [currSelectedPrompt].dispatchEvent(mouseoverEvent);
         }
-        // //console.log("Current Prompt key(down)", currSelectedPrompt);
-        document
-          .querySelectorAll(".prompt")
-          [currSelectedPrompt].dispatchEvent(mouseoverEvent);
       }
+
+      // left arrow
+      if (e.keyCode === 37) {
+        e.preventDefault();
+        e.stopPropagation();
+        isSelect = true;
+        if (!isAutoPrompt) {
+          curSelectWord -= 1;
+          if (curSelectWord < 0) {
+            curSelectWord = totalWords - 1;
+          }
+          console.log("Cur select word : " + curSelectWord);
+          document
+            .getElementById("w" + curSelectWord)
+            .dispatchEvent(mouseoverEvent);
+        }
+      }
+
+      // right arow
+      else if (e.keyCode === 39 || e.keyCode == 9) {
+        e.preventDefault();
+        e.stopPropagation();
+        isSelect = true;
+        if (!isAutoPrompt) {
+          curSelectWord += 1;
+          curSelectWord = curSelectWord % totalWords;
+          // if (curSelectWord >= totalWords) {
+          //   curSelectWord = 0;
+          // }
+          console.log("Cur select word : " + curSelectWord);
+          document
+            .getElementById("w" + curSelectWord)
+            .dispatchEvent(mouseoverEvent);
+        }
+      }
+
       //Esc
       else if (e.keyCode === 27) {
         e.preventDefault();
         e.stopPropagation();
+        isSelect = false;
         $("#pprompts").remove();
         document
           .getElementsByClassName("_2lMWa")[0]
           .removeEventListener("keydown", handlePrompts);
-        // //console.log("Current Prompt key(escape)", currSelectedPrompt);
+        //console.log("Current Prompt key(escape)", currSelectedPrompt);
 
         var currentMessage = $('div[data-tab="10"]').text();
         $('div[data-tab="10"]').text("");
@@ -521,13 +557,20 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
       }
       //Enter
       else if (e.keyCode === 13) {
-        e.preventDefault();
-        e.stopPropagation();
-        document
-          .getElementsByClassName("_2lMWa")[0]
-          .removeEventListener("keydown", handlePrompts);
-        // //console.log("Current Prompt key(enter)", currSelectedPrompt);
-        document.querySelectorAll(".prompt")[currSelectedPrompt].click();
+        if (isSelect == true) {
+          e.preventDefault();
+          e.stopPropagation();
+          document
+            .getElementsByClassName("_2lMWa")[0]
+            .removeEventListener("keydown", handlePrompts);
+          if (isAutoPrompt) {
+            //console.log("Current Prompt key(enter)", currSelectedPrompt);
+            document.querySelectorAll(".prompt")[currSelectedPrompt].click();
+          } else {
+            document.getElementById("w" + curSelectWord).click();
+          }
+        }
+        isSelect = false;
       }
     }
   }
@@ -731,6 +774,12 @@ $(document).ready(function () {
   tabKeyPress = true;
   totalPrompts = 0;
   currSelectedPrompt = 0;
+  curSelectWord = 0;
+  totalWords = 0;
+  isAutoPrompt = false;
+  isShift = false;
+  isSelect = false;
+
   emotion_call_flag = false;
   chat_name = "";
   var interval = setInterval(function () {
@@ -765,9 +814,15 @@ $(document).ready(function () {
         // var new_context = getEmotionDetectionResults(context);
         // // getCalendarResults(context, new_context);
         $('[data-tab="10"]').on("keydown", function (e) {
-          if (e.keyCode == 9) {
+          if (e.keyCode == 16) {
+            isShift = true;
+          }
+
+          // Shift + tab key for prompts
+          if (isShift && e.keyCode == 9) {
             e.stopPropagation();
             e.preventDefault();
+            isAutoPrompt = true;
             //tabKeyPress = true;
             ////console.log(tabKeyPress);
             $('[data-tab="10"]').blur();
@@ -794,6 +849,8 @@ $(document).ready(function () {
             e.keyCode == 8
           ) {
             key_pressed = e.keyCode;
+            isAutoPrompt = false;
+            isSelect = false;
             // On a keypress, the pressed key is not included in the context, so we need to add that char in the context.
             // So, first we convert the keycode to char
             var last_char = String.fromCharCode(key_pressed).toLowerCase();
@@ -814,6 +871,10 @@ $(document).ready(function () {
 
             getWordCompleteResults(context[0], key_pressed);
           }
+        });
+
+        $('[data-tab="10"]').on("keyup", function (e) {
+          isShift = false;
         });
 
         tabKeyPress = true;

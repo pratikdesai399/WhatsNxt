@@ -64,7 +64,7 @@ nltk.download('wordnet')
 nltk.download('omw-1.4')
 
 emotion_loaded_model = pickle.load(open(
-    '/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/emotion_detection/emotion_pipeline_model.pickle', 'rb'))
+    '/home/versatile/RON/Btech_Project/Models/emotion_pipeline_model.pickle', 'rb'))
 # text_data = pd.DataFrame(['I am pissed at you', 'How are you?', 'What a weird experience that was!', 'I feel sparkling', 'I miss him', 'I loved the way you cooked for me'])
 # raw_data = text_data.copy()
 # line = data_preprocessing(text_data)
@@ -85,9 +85,9 @@ emotion_loaded_model = pickle.load(open(
 global modelPipeline
 # modelPipeline = pipeline('text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
 
-modelPipeline = pipeline(
-    'text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
-# modelPipeline = pipeline('text-generation', model = '/home/versatile/Desktop/6l_data_model/output')
+# modelPipeline = pipeline(
+    # 'text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
+modelPipeline = pipeline('text-generation', model = '/home/versatile/RON/Btech_Project/Models/OnlyTextModel/output')
 
 
 def get_trigram_freq(tokens):
