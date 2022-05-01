@@ -140,12 +140,19 @@ def incomplete_pred(words, n):
 
 
 tokens = brown.words()
+print("Brown added")
 # tokens += reuters.words()
-# tokens += nps_chat.words()
-# # tokens += semcor.words()
+# print("Reuters added")
+tokens += nps_chat.words()
+print("NPS Chat added")
+# tokens += semcor.words()
+# print("Semcor added")
 # tokens += gutenberg.words()
-# # tokens += conll2000.words()
-# tokens += movie_reviews.words()
+# print("Gutenberg added")
+# tokens += conll2000.words()
+# print("Conll 2000 added")
+tokens += movie_reviews.words()
+print("Movie Review added")
 
 bgs_freq = get_bigram_freq(tokens)
 tgs_freq = get_trigram_freq(tokens)
