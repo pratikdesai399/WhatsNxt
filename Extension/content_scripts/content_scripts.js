@@ -936,6 +936,15 @@ $(document).ready(function () {
         new_latest_msg != undefined &&
         newChatName == chat_name
       ) {
+        // console.log("different contexts");
+        // console.log("NEW CHAT NAME: " + newChatName);
+        // console.log("CHAT NAME: " + chat_name);
+        var context_1 = getContext(1);
+        // console.log(context_1);
+        var new_context = getEmotionDetectionResults(context_1);
+        getCalendarResults(context_1, new_context);
+        emotion_call_flag = false;
+
         // removing prompt when new message arrives
         $("#pprompts").remove();
         isSelect = false;
@@ -948,15 +957,6 @@ $(document).ready(function () {
         $('div[data-tab="10"]').text("");
         $('div[data-tab="10"]').focus();
         document.execCommand("insertText", false, currentMessage);
-
-        // console.log("different contexts");
-        // console.log("NEW CHAT NAME: " + newChatName);
-        // console.log("CHAT NAME: " + chat_name);
-        var context_1 = getContext(1);
-        // console.log(context_1);
-        var new_context = getEmotionDetectionResults(context_1);
-        getCalendarResults(context_1, new_context);
-        emotion_call_flag = false;
       }
       // console.log("NEW CHAT NAME: " + newChatName);
       // console.log("CHAT NAME: " + chat_name);
