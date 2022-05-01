@@ -140,12 +140,12 @@ def incomplete_pred(words, n):
 
 
 tokens = brown.words()
-tokens += reuters.words()
-tokens += nps_chat.words()
-# tokens += semcor.words()
-tokens += gutenberg.words()
-# tokens += conll2000.words()
-tokens += movie_reviews.words()
+# tokens += reuters.words()
+# tokens += nps_chat.words()
+# # tokens += semcor.words()
+# tokens += gutenberg.words()
+# # tokens += conll2000.words()
+# tokens += movie_reviews.words()
 
 bgs_freq = get_bigram_freq(tokens)
 tgs_freq = get_trigram_freq(tokens)
@@ -216,23 +216,23 @@ def emotion():
         context = context.rsplit("#", 1)
         myname = context[1]
         context = context[0]
-        # print("EMOTION context: ")
-        # print(context)
+        print("EMOTION context: ")
+        print(context)
         for msg in context.split("#")[:]:
             # print(msg.split(":"))
             # if myname != msg.split(":")[0]:
-            msgs.append(msg.split(":")[1])
+            msgs.append(msg.split(":", 1)[1])
         text_data = pd.DataFrame(msgs)
         text_data_preprocessed = data_preprocessing(text_data)
         result = emotion_loaded_model.predict(text_data_preprocessed)
-        # print("MESSAGES====>>> ", msgs)
+        print("MESSAGES====>>> ", msgs)
 
         # print("REsult: ", result)
         # print("length; ", len(result))
         result_emotion = []
         for i in range(len(result)):
             result_emotion.append(emotions[result[i]])
-        # print("Emotion Result: {}".format(result_emotion))
+        print("Emotion Result: {}".format(result_emotion))
     except:
         result_emotion = []
 

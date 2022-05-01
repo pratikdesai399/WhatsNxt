@@ -79,9 +79,9 @@ function getContext() {
       // var author = metadata.split("]")[1].trim().slice(0, -1);
       var author = metadata.split("]")[1].trim();
       var message = $(texts[1]).text().trim();
-      // console.log("PRINGTING MESSAGE: ----->");
+      console.log("PRINGTING MESSAGE: ----->");
       // console.log($(texts[1]).text());
-      // console.log(message);
+      console.log(message);
 
       // console.log(message);
       messageDOMs.push(texts[1]);
@@ -113,8 +113,8 @@ function getContext() {
     context += " ";
   }
 
-  //console.log("calender context: ");
-  //console.log(context);
+  console.log("calender context: ");
+  console.log(context);
   // console.log("CALENDAR: ", context);
   // console.log("Authors: ", authors);
   // console.log("Myname: ", myname);
@@ -186,8 +186,8 @@ function getEmotionDetectionResults(emotion_context) {
       );
     },
   });
-  //console.log("New context: ");
-  //console.log(new_context);
+  console.log("New context: ");
+  console.log(new_context);
   return new_context;
 }
 
@@ -537,6 +537,26 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
   document.querySelector('[data-tab="8"]').scrollIntoView(false);
 }
 
+function calculateAverageEmotion(emotionListVals) {
+  var counts = {};
+  var emotions = ["😡", "😄", "❤️", "😐", "😞", "😮"];
+
+  for (const num of emotionListVals) {
+    counts[num] = counts[num] ? counts[num] + 1 : 1;
+  }
+
+  document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML += " [";
+
+  for (const em of Object.keys(counts)) {
+    document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML += em;
+  }
+
+  document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML += "]";
+
+  console.log(counts);
+  return counts;
+}
+
 function displayEmotionResults(vals, context, DOMs) {
   //console.log("In Display emotion function");
   var myname;
@@ -558,12 +578,23 @@ function displayEmotionResults(vals, context, DOMs) {
   myname = split[2];
   context = context.split("#");
 
-  // console.log("displayEmotionResults context: ");
-  // console.log(context);
+  console.log("displayEmotionResults context: ");
+  console.log(context);
 
   // for msg in context.split("#")[:-1]:
   for (let i = 0; i < context.length; i++) {
-    msgs.push(context[i].split(":")[1]);
+    console.log(context[i]);
+    console.log(context[i].split(/:(.*)/s).slice(0, 2)[1]);
+    console.log(context[i].split(/:(.*)/s).slice(0, 2)[1].trim());
+
+    msgs.push(context[i].split(/:(.*)/s).slice(0, 2)[1].trim());
+    console.log("Checking for :--->>>");
+    // console.log(context[i].split(":", 1));
+
+    // context = context[i].split(/:(.*)/s).slice(0, 2);
+    // myname = context[0];
+    // context = context[1].split("#").slice(1, -1);
+    console.log(context[i].split(/:(.*)/s).slice(0, 2)[1].trim());
   }
   // console.log("Messages: ");
   // console.log(msgs);
@@ -576,9 +607,15 @@ function displayEmotionResults(vals, context, DOMs) {
     // console.log(message + " #" + temp + "#");
     $(DOMs[i]).text("");
     // console.log("<span>" + message + " #" + temp + "#" + "</span>");
-    new_context += message + " #" + temp + "#" + "<SPLIT>";
-    $(DOMs[i]).append("<span>" + message + " #" + temp + "#" + "</span>");
+    new_context += message + " [" + temp + "]" + "<SPLIT>";
+    $(DOMs[i]).append("<span>" + message + " [" + temp + "]" + "</span>");
   }
+  counts = calculateAverageEmotion(vals);
+
+  // document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML +=
+  counts;
+  console.log("======name======");
+
   // console.log("emotion context");
   // console.log(new_context);
   return new_context;
@@ -691,13 +728,26 @@ function displayCalendar(vals, DOMs, context, authors, selfName) {
 $(document).ready(function () {
   var chat_name, newChatName;
   //console.log("WhatsNxt?");
-  tabKeyPress = false;
+  tabKeyPress = true;
   totalPrompts = 0;
   currSelectedPrompt = 0;
-
+  emotion_call_flag = false;
+  chat_name = "";
   var interval = setInterval(function () {
-    // //console.log("Loading...");
+    console.log("Loading...");
+    if (emotion_call_flag == true) {
+      console.log("emotion_call_flag == true");
+      emotion_call_flag = false;
+      // Format of returned context: [context, messageDOMs, authors, myname]
+      var context = getContext();
+      // var emotion_context = getContextforEmotionDetection();
+      //console.log("CONTEXT: " + calendar_context);
+      console.log("Calling Emotion 1");
+      var new_context = getEmotionDetectionResults(context);
+      getCalendarResults(context, new_context);
+    }
     if (tabKeyPress == false) {
+      // console.log("INSIDE Tab key");
       if ($('[data-tab="10"]').length > 0) {
         chat_name =
           document.getElementsByClassName("_21nHd")[0].childNodes[0]
@@ -707,12 +757,13 @@ $(document).ready(function () {
         // //console.log($('[data-tab="10"]'));
         ////console.log("Event Listerner");
 
-        // Format of returned context: [context, messageDOMs, authors, myname]
-        var context = getContext();
-        // var emotion_context = getContextforEmotionDetection();
-        //console.log("CONTEXT: " + calendar_context);
-        var new_context = getEmotionDetectionResults(context);
-        getCalendarResults(context, new_context);
+        // // Format of returned context: [context, messageDOMs, authors, myname]
+        // var context = getContext();
+        // // var emotion_context = getContextforEmotionDetection();
+        // //console.log("CONTEXT: " + calendar_context);
+        // console.log("Calling Emotion 1");
+        // var new_context = getEmotionDetectionResults(context);
+        // // getCalendarResults(context, new_context);
         $('[data-tab="10"]').on("keydown", function (e) {
           if (e.keyCode == 9) {
             e.stopPropagation();
@@ -729,6 +780,8 @@ $(document).ready(function () {
             var context = getContext();
             // var emotion_context = getContextforEmotionDetection();
             // console.log("CONTEXT: " + calendar_context);
+            console.log("Calling Emotion 2");
+
             var new_context = getEmotionDetectionResults(context);
             getCalendarResults(context, new_context);
             currSelectedPrompt = 0;
@@ -771,14 +824,16 @@ $(document).ready(function () {
       newChatName =
         document.getElementsByClassName("_21nHd")[0].childNodes[0].childNodes[0]
           .data;
-      ////console.log("NEW CHAT NAME: "+newChatName);
-      ////console.log("CHAT NAME: "+chat_name);
+      //console.log("NEW CHAT NAME: "+newChatName);
+      //console.log("CHAT NAME: "+chat_name);
       if (newChatName != chat_name) {
         ////console.log(chat_name);
         ////console.log(newChatName);
-        // //console.log("UNBINDING NOW");
+        console.log("UNBINDING NOW");
         $('[data-tab="10"]').off("keydown");
         tabKeyPress = false;
+        emotion_call_flag = true;
+        console.log("emotion_call_flag == False");
       }
     }
 
