@@ -116,4 +116,5 @@ MEETING_WORDS = (
     'speech',
     'chitchat',
     'tell',
+    'presentation'
 )
