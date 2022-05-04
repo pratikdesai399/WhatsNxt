@@ -4,6 +4,7 @@
 # from traceback import print_tb
 # from email.policy import default
 # from unittest.util import _MAX_LENGTH
+from xml.dom.minidom import parseString
 from flask import Flask, jsonify, request
 import sys
 from flask_cors import CORS
@@ -64,7 +65,7 @@ nltk.download('wordnet')
 nltk.download('omw-1.4')
 
 emotion_loaded_model = pickle.load(open(
-    '/home/versatile/RON/Btech_Project/Models/emotion_pipeline_model.pickle', 'rb'))
+    '/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/emotion_detection/emotion_pipeline_model.pickle', 'rb'))
 # text_data = pd.DataFrame(['I am pissed at you', 'How are you?', 'What a weird experience that was!', 'I feel sparkling', 'I miss him', 'I loved the way you cooked for me'])
 # raw_data = text_data.copy()
 # line = data_preprocessing(text_data)
@@ -86,8 +87,9 @@ global modelPipeline
 # modelPipeline = pipeline('text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
 
 # modelPipeline = pipeline(
-    # 'text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
-modelPipeline = pipeline('text-generation', model = '/home/versatile/RON/Btech_Project/Models/OnlyTextModel/output')
+# 'text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
+modelPipeline = pipeline(
+    'text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/new_model_without_hbd/output')
 
 
 def get_trigram_freq(tokens):
@@ -112,7 +114,7 @@ def appendwithcheck(preds, to_append):
 
 def incomplete_pred(words, n):
     all_succeeding = bgs_freq[(words[n-2])].most_common()
-    #print (all_succeeding, file=sys.stderr)
+    # print (all_succeeding, file=sys.stderr)
     preds = []
     number = 0
     for pred in all_succeeding:
@@ -139,6 +141,45 @@ def incomplete_pred(words, n):
     return preds
 
 
+# Below code added for word spell correction and completion for the first word
+first_words_in_sent = []
+for s in brown.sents():
+    if not s[0].isalpha():
+        continue
+    if len(s[0]) > 2:
+        first_words_in_sent.append(s[0])
+
+first_words_in_sent_set = set(first_words_in_sent)
+
+# Make a dict of words along with their frequency
+first_words_dict_with_freq = {}
+for item in first_words_in_sent:
+    first_words_dict_with_freq[item] = first_words_dict_with_freq.get(
+        item, 0) + 1
+
+first_words_dict_with_freq = dict(
+    sorted(first_words_dict_with_freq.items(), key=lambda kv: (kv[1], kv[0]), reverse=True))
+
+
+def first_word(words, n):
+
+    preds = []
+    med = []
+    for pred in first_words_in_sent_set:
+        # Setting penalty for substitution to 2 to help in word completion more than spell check
+        med.append((pred, nltk.edit_distance(
+            pred, words[n-1], substitution_cost=2, transpositions=True)))
+    med.sort(key=lambda x: x[1])
+    index = 0
+    while len(preds) < 5:
+        if index < len(med):
+            if med[index][1] > 0:
+                val = appendwithcheck(preds, med[index])
+            index += 1
+
+    return preds
+
+
 tokens = brown.words()
 print("Brown added")
 # tokens += reuters.words()
@@ -161,7 +202,7 @@ tgs_freq = get_trigram_freq(tokens)
 
 
 def worker(string, work):
-    #print(request, file=sys.stderr)
+    # print(request, file=sys.stderr)
     # string = "I told her that "
     # work = "pred"
     words = string.split()
@@ -190,6 +231,11 @@ def worker(string, work):
             print(tgs_freq[(words[n-2], words[n-1])
                            ].most_common(3), file=sys.stderr)
             return arr
+
+    elif work == 'first_word':
+        preds = first_word(words, n)
+        print("First Word: ", preds)
+        return preds
 
     else:
         print(incomplete_pred(words, n), file=sys.stderr)
@@ -270,7 +316,7 @@ def autocomplete():
     #     if len(temp[0]['generated_text']) - len(context) > 3:
     #         result.append(temp[0])
     #         i = i + 1
-    result = modelPipeline(context, max_length=150, num_return_sequences=3, do_sample=True,
+    result = modelPipeline(context, max_length=120, num_return_sequences=3, do_sample=True,
                            eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
 
     print("Result: {}".format(result))
@@ -298,8 +344,56 @@ def wordcomplete():
     if len(context) != 0 and len(wordlist) > 2:
         complete = worker(context, '')
         predict = worker(context, 'pred')
+    elif len(context) == 0:
+        manual = ["Hello", 1], ['Hi', 1], ['Hey', 1]
+        # first_words_list_with_freq = list(first_words_dict_with_freq)[:4]
+        # [manual.append([ele, 2]) for ele in first_words_list_with_freq]
+        # print("manual:: ", manual)
+
     else:
-        manual = [["Hello", 1], ["Hi", 2]]
+        # print("context: ", context)
+        pred = worker(context, 'first_word')
+
+        """ Below code is the priority algorithm to display the first word "word completion" results in order of priority.
+        The word with least minimum edit distance will come first. But if the minimum edit distance of few words is
+        same, then the words will be arranges based on their frequency in the Brown Corpus as first words. """
+        pred_list = []
+        same_cost_list = []
+        same_cost_value = 0
+        for p, v in pred:
+            if v > same_cost_value and len(same_cost_list) > 0:
+                pred_dict_each = {}
+                # print("-->", same_cost_list)
+                for ele in same_cost_list:
+                    pred_dict_each[ele] = first_words_dict_with_freq[ele]
+                # print(pred_dict_each)
+                pred_list.extend(sorted(pred_dict_each.items(),
+                                        key=lambda kv: (kv[1], kv[0]), reverse=True))
+                # print(pred_list)
+
+                same_cost_list = []
+                same_cost_list.append(p)
+                same_cost_value = v
+
+                continue
+            same_cost_value = v
+            # print("*", p)
+            same_cost_list.append(p)
+
+        pred_dict_each = {}
+        for ele in same_cost_list:
+            pred_dict_each[ele] = first_words_dict_with_freq[ele]
+        # print(pred_dict_each)
+        pred_list.extend(sorted(pred_dict_each.items(),
+                                key=lambda kv: (kv[1], kv[0]), reverse=True))
+        print(pred_list)
+        # pred_list_final = []
+        # [pred_list_final.append(i) for i, j in pred_list]
+        # pred_list_final
+
+        # Setting manual which has the list of first words to the pred_list_final to send as response
+        manual = pred_list
+        # manual = [["Hello", 1], ["Hi", 2]]
 
     # result = []
     # wordlist = context.split(" ")
@@ -322,7 +416,7 @@ def wordcomplete():
     return res
 
 
-@app.route("/calendar")
+@ app.route("/calendar")
 def calendar():
     result = []
     context = request.args.get('context', default='', type=str)
@@ -336,8 +430,11 @@ def calendar():
             print(f'line = {line}')
             line = re.sub(r'[^\w]', ' ', line)
             print(f'line = {line}')
-            # try:
-            dt, meeting_words_list = timefhuman(line)
+            try:
+                dt, meeting_words_list = timefhuman(line)
+            except:
+                df = []
+                meeting_words_list = []
             print("Dt: ", type(dt))
             print("Meeting words", meeting_words_list)
             has_calendar = False
@@ -349,6 +446,7 @@ def calendar():
             # print(dt)
             # If there is no date and time mentioned in the messsage
             if(dt == [] or type(dt) is tuple or meeting_words_list == []):
+                print(dt)
                 pass
             else:
                 has_calendar = True
@@ -357,6 +455,12 @@ def calendar():
                 day = dt.day
                 hour = dt.hour
                 minute = dt.minute
+                print(has_calendar)
+                print(year)
+                print(month)
+                print(day)
+                print(hour)
+                print(minute)
 
                 # The first regular expression evaluates to True if strings like 9 am or 10pm etc. are not found in the line
                 # The second regex evaluates to True if only numbers are present like 9 or 10 etc. This is to avo   id adding 12 Hrs if words like morning, noon are present.
@@ -365,7 +469,7 @@ def calendar():
 
                         if now.day == day and now.month == month and now.year == year:
                             if hour < 12:
-                                # print("........hour " + str(hour))
+                                print("........hour " + str(hour))
                                 hour += 12
                                 if hour < now.hour and minute < now.minute:
                                     has_calendar = False

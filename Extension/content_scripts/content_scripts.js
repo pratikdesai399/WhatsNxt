@@ -2,6 +2,23 @@ function sampleFun() {
   ////console.log("SAMPLE PROMPTS");
 }
 
+function getChatName() {
+  var chat_name = "";
+
+  chat_title_element =
+    document.getElementsByClassName("_21nHd")[0].childNodes[0].childNodes;
+  for (let i = 0; i < chat_title_element.length; i++) {
+    if (chat_title_element[i].wholeText != undefined) {
+      // console.log(chat_title_element[i].wholeText);
+      chat_name += chat_title_element[i].wholeText;
+      // console.log(chat_title_element);
+    } else {
+      chat_name += chat_title_element[i].alt;
+    }
+  }
+  return chat_name;
+}
+
 function getContextforEmotionDetection() {
   var myName = "";
   var context = "";
@@ -101,7 +118,10 @@ function getContext(number_of_msgs) {
         myname = author;
       }
       if (type != "msg_outgoing") {
-        authors.push(author);
+        authors.push(author.split(":")[0]);
+      } else if (authors.length < 1) {
+        chat_name = getChatName();
+        authors.push(chat_name);
       }
     }
   });
@@ -120,8 +140,8 @@ function getContext(number_of_msgs) {
   //console.log("calender context: ");
   //console.log(context);
   // //console.log("CALENDAR: ", context);
-  // //console.log("Authors: ", authors);
-  // //console.log("Myname: ", myname);
+  // console.log("Authors: ", authors);
+  // console.log("Myname: ", myname);
   return [context, messageDOMs, authors, myname];
 }
 
@@ -200,6 +220,7 @@ function getCalendarResults(calendar_context, new_context) {
   var context = new_context;
   var DOMs = calendar_context[1];
   var authors = calendar_context[2];
+  // console.log(authors);
   var myname = calendar_context[3];
   //console.log("Get new: ");
   //console.log(context);
@@ -627,8 +648,9 @@ function calculateAverageEmotion(emotionListVals) {
     counts[num] = counts[num] ? counts[num] + 1 : 1;
   }
   // console.log("Average");
-  old_name =
-    document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML;
+  // old_name =
+  //   document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML;
+  old_name = getChatName();
   // console.log(old_name);
   if (old_name.includes("[")) {
     old_name = old_name.split("]")[0];
@@ -673,9 +695,9 @@ function displayEmotionResults(vals, context, DOMs) {
   // context = context[1].split("#").slice(1, -1);
 
   // For new combined context format:
+  // console.log(context);
   split = context.match(/((.|\n)*)\#(.|\n)*/);
   context = split[1];
-  // //console.log(context);
   myname = split[2];
   context = context.split("#");
 
@@ -727,7 +749,7 @@ function displayCalendar(vals, DOMs, context, authors, selfName) {
   var context = context.split("<SPLIT>");
   authors = [...new Set(authors)];
   var nonSelfNames = "";
-
+  // console.log(authors);
   if (authors.length > 1) {
     nonSelfNames = authors.join(", ");
   } else {
@@ -808,7 +830,8 @@ function displayCalendar(vals, DOMs, context, authors, selfName) {
         String(parseInt(minute) + 30) +
         "00";
 
-      ////console.log(link);
+      // console.log(nonSelfNames);
+      // console.log(link);
       $(DOMs[i]).text("");
       $(DOMs[i]).append(
         "<span>" +
@@ -840,6 +863,7 @@ $(document).ready(function () {
 
   emotion_call_flag = false;
   chat_name = "";
+  newChatName = "";
   var interval = setInterval(function () {
     console.log("Loading..." + curSelectWord);
     if (emotion_call_flag == true) {
@@ -857,11 +881,15 @@ $(document).ready(function () {
     if (tabKeyPress == false) {
       // //console.log("INSIDE Tab key");
       if ($('[data-tab="10"]').length > 0) {
-        chat_name =
-          document.getElementsByClassName("_21nHd")[0].childNodes[0]
-            .childNodes[0].data;
+        // chat_name =
+        //   document.getElementsByClassName("_21nHd")[0].childNodes[0]
+        //     .childNodes[0].data;
+
+        chat_name = getChatName();
+
+        // console.log("CHAT NAME IN INNER LOOP: " + chat_name);
         chat_name = chat_name.split("[")[0];
-        //////console.log("CHAT NAME IN INNER LOOP: "+chat_name);
+        // console.log("CHAT NAME IN INNER LOOP: " + chat_name);
 
         // ////console.log($('[data-tab="10"]'));
         //////console.log("Event Listerner");
@@ -943,14 +971,17 @@ $(document).ready(function () {
         //clearInterval(interval);
       }
     } else {
-      newChatName =
-        document.getElementsByClassName("_21nHd")[0].childNodes[0].childNodes[0]
-          .data;
+      // newChatName =
+      //   document.getElementsByClassName("_21nHd")[0].childNodes[0].childNodes[0]
+      //     .data;
 
       try {
+        newChatName = getChatName();
+        // console.log(newChatName);
         newChatName = newChatName.split("[")[0];
+        // console.log(newChatName);
       } catch (err) {
-        console.log("The chat name contains emoji");
+        console.log("Errorsss");
       }
 
       var msgs = $(".focusable-list-item");
