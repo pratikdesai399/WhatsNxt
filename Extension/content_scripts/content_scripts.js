@@ -294,6 +294,8 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
 
   // Sentence
   // var currSelectedPrompt = 0;
+  currSelectedPrompt = -1;
+  curSelectWord = -1;
   var propmtLen = prompts.length;
   totalPrompts = prompts.length;
   prompts.forEach((p, i) => {
@@ -329,7 +331,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
 
       manual.forEach((w, i) => {
         $("#endrow").append(
-          `<p class='predictmanual' id="w${id_count}" style='display:inline;float:left;inline-size: min-content; border-radius: 5px; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${w[0]}</p>`
+          `<p class='predictmanual words' id="w${id_count}" style='display:inline;float:left;inline-size: min-content; border-radius: 5px; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${w[0]}</p>`
         );
         id_count += 1;
       });
@@ -352,7 +354,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
         //console.log("Complete word : " + w[0]);
         if (lastword.trim().localeCompare(w[0]) != 0) {
           $("#endrow").append(
-            `<p class='complete' id="w${id_count}" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${w[0]}</p>`
+            `<p class='complete words' id="w${id_count}" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${w[0]}</p>`
           );
           id_count += 1;
         }
@@ -370,14 +372,14 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
       }
       predict.forEach((w, i) => {
         $("#endrow").append(
-          `<p class='predictmanual' id="w${id_count}" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${w[0]}</p>`
+          `<p class='predictmanual words' id="w${id_count}" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${w[0]}</p>`
         );
         id_count += 1;
       });
     } else if (key_pressed == -1) {
       continue;
     }
-    totalWords = i;
+    totalWords = id_count;
   }
 
   // words.forEach((w, i) => {
@@ -390,25 +392,27 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
   //   );
   // });
 
-  $(".complete").on("mouseover", function () {
-    $(".complete").css("background", "none");
+  $(".words").on("mouseover", function () {
+    $(".words").css("background", "none");
     $(this).css("background", "#FFF");
     try {
-      currSelectedPrompt = parseInt($(this)[0].id);
+      curSelectWord = parseInt($(this)[0].id[1]);
+      console.log("Hovor : " + curSelectWord);
     } catch (error) {
-      currSelectedPrompt = 0;
+      curSelectWord = 0;
     }
   });
 
-  $(".predictmanual").on("mouseover", function () {
-    $(".predictmanual").css("background", "none");
-    $(this).css("background", "#FFF");
-    try {
-      currSelectedPrompt = parseInt($(this)[0].id);
-    } catch (error) {
-      currSelectedPrompt = 0;
-    }
-  });
+  // $(".predictmanual").on("mouseover", function () {
+  //   $(".predictmanual").css("background", "none");
+  //   $(this).css("background", "#FFF");
+  //   try {
+  //     curSelectWord = parseInt($(this)[0].id[1]);
+  //     console.log("Hovor : " + curSelectWord);
+  //   } catch (error) {
+  //     curSelectWord = 0;
+  //   }
+  // });
 
   $(".prompt").on("mouseover", function () {
     $(".prompt").css("background", "none");
@@ -422,9 +426,9 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
 
   const mouseoverEvent = new Event("mouseover");
   //console.log("Before Dispatch : " + totalPrompts);
-  if (document.querySelector(".prompt")) {
-    document.querySelector(".prompt").dispatchEvent(mouseoverEvent);
-  }
+  // if (document.querySelector(".prompt")) {
+  //   document.querySelector(".prompt").dispatchEvent(mouseoverEvent);
+  // }
   // totalPrompts = prompts.length;
 
   $(".prompt").on("click", function () {
@@ -473,27 +477,33 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
   });
 
   function handlePrompts(e) {
+    e.stopImmediatePropagation();
     if ($("#pprompts").length) {
-      //console.log("Total : " + totalPrompts + " Curr : " + currSelectedPrompt);
+      console.log("prompts : " + totalPrompts + " words : " + totalWords);
       //Up arrow
       if (e.keyCode === 38) {
         e.preventDefault();
         e.stopPropagation();
         isSelect = true;
         if (isAutoPrompt) {
-          currSelectedPrompt -= 1;
-          if (currSelectedPrompt < 0) {
-            currSelectedPrompt = totalPrompts - 1;
+          console.log("prompt count : " + totalPrompts);
+          if (currSelectedPrompt == -1) {
+            currSelectedPrompt = 0;
+          } else {
+            currSelectedPrompt -= 1;
+            if (currSelectedPrompt < 0) {
+              currSelectedPrompt = totalPrompts - 1;
+            }
           }
-          //console.log("Current Prompt key(up)", currSelectedPrompt);
+          console.log("Current Prompt key(up)", currSelectedPrompt);
           document
             .querySelectorAll(".prompt")
             [currSelectedPrompt].dispatchEvent(mouseoverEvent);
         }
         // ////console.log("Current Prompt key(up)", currSelectedPrompt);
-        document
-          .querySelectorAll(".prompt")
-          [currSelectedPrompt].dispatchEvent(mouseoverEvent);
+        // document
+        // .querySelectorAll(".prompt")
+        // [currSelectedPrompt].dispatchEvent(mouseoverEvent);
       }
       //Down arrow
       else if (e.keyCode === 40 || e.keyCode == 9) {
@@ -501,19 +511,24 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
         e.stopPropagation();
         isSelect = true;
         if (isAutoPrompt) {
-          currSelectedPrompt += 1;
-          if (currSelectedPrompt >= totalPrompts) {
+          console.log("prompt count : " + totalPrompts);
+          if (currSelectedPrompt == -1) {
             currSelectedPrompt = 0;
+          } else {
+            currSelectedPrompt += 1;
+            if (currSelectedPrompt >= totalPrompts) {
+              currSelectedPrompt = 0;
+            }
           }
-          //console.log("Current Prompt key(down)", currSelectedPrompt);
+          console.log("Current Prompt key(down)", currSelectedPrompt);
           document
             .querySelectorAll(".prompt")
             [currSelectedPrompt].dispatchEvent(mouseoverEvent);
         }
         // ////console.log("Current Prompt key(down)", currSelectedPrompt);
-        document
-          .querySelectorAll(".prompt")
-          [currSelectedPrompt].dispatchEvent(mouseoverEvent);
+        // document
+        //   .querySelectorAll(".prompt")
+        //   [currSelectedPrompt].dispatchEvent(mouseoverEvent);
       }
 
       // left arrow
@@ -522,9 +537,14 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
         e.stopPropagation();
         isSelect = true;
         if (!isAutoPrompt) {
-          curSelectWord -= 1;
-          if (curSelectWord < 0) {
-            curSelectWord = totalWords - 1;
+          console.log("word count : " + totalWords);
+          if (curSelectWord == -1) {
+            curSelectWord = 0;
+          } else {
+            curSelectWord -= 1;
+            if (curSelectWord < 0) {
+              curSelectWord = totalWords - 1;
+            }
           }
           console.log("Cur select word : " + curSelectWord);
           document
@@ -539,8 +559,15 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
         e.stopPropagation();
         isSelect = true;
         if (!isAutoPrompt) {
-          curSelectWord += 1;
-          curSelectWord = curSelectWord % totalWords;
+          console.log("word count : " + totalWords);
+          if (curSelectWord == -1) {
+            curSelectWord = 0;
+          } else {
+            curSelectWord += 1;
+            if (curSelectWord >= totalWords) {
+              curSelectWord = 0;
+            }
+          }
           // if (curSelectWord >= totalWords) {
           //   curSelectWord = 0;
           // }
@@ -553,9 +580,9 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
 
       //Esc
       else if (e.keyCode === 27) {
+        isSelect = false;
         e.preventDefault();
         e.stopPropagation();
-        isSelect = false;
         $("#pprompts").remove();
         document
           .getElementsByClassName("_2lMWa")[0]
@@ -570,6 +597,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
       //Enter
       else if (e.keyCode === 13) {
         if (isSelect == true) {
+          isSelect = false;
           e.preventDefault();
           e.stopPropagation();
           document
@@ -582,7 +610,6 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
             document.getElementById("w" + curSelectWord).click();
           }
         }
-        isSelect = false;
       }
     }
   }
@@ -804,8 +831,8 @@ $(document).ready(function () {
   ////console.log("WhatsNxt?");
   tabKeyPress = true;
   totalPrompts = 0;
-  currSelectedPrompt = 0;
-  curSelectWord = 0;
+  currSelectedPrompt = -1;
+  curSelectWord = -1;
   totalWords = 0;
   isAutoPrompt = false;
   isShift = false;
@@ -814,7 +841,7 @@ $(document).ready(function () {
   emotion_call_flag = false;
   chat_name = "";
   var interval = setInterval(function () {
-    //console.log("Loading...");
+    console.log("Loading..." + curSelectWord);
     if (emotion_call_flag == true) {
       //console.log("emotion_call_flag == true");
       emotion_call_flag = false;
