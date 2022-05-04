@@ -453,58 +453,75 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
   // totalPrompts = prompts.length;
 
   $(".prompt").on("click", function () {
+    $("#pprompts").remove();
     document
       .getElementsByClassName("_2lMWa")[0]
       .removeEventListener("keydown", handlePrompts);
 
-    var currentMessage = $('div[data-tab="10"]').text();
-    $('div[data-tab="10"]').text("");
+    var currentMessage =
+      document.getElementsByClassName("p3_M1")[0].childNodes[0].childNodes[1]
+        .innerHTML;
     currentMessage = currentMessage.trim() + " " + $(this).text();
-    $('div[data-tab="10"]').focus();
+    document.getElementsByClassName(
+      "p3_M1"
+    )[0].childNodes[0].childNodes[1].innerHTML = "";
     document.execCommand("insertText", false, currentMessage);
-    $("#pprompts").remove();
+    $('div[data-tab="10"]').focus();
     $('div[data-tab="10"]').siblings().hide();
   });
 
   $(".predictmanual").on("click", function () {
+    $("#pprompts").remove();
     document
       .getElementsByClassName("_2lMWa")[0]
       .removeEventListener("keydown", handlePrompts);
 
-    var currentMessage = $('div[data-tab="10"]').text();
-    $('div[data-tab="10"]').text("");
+    var currentMessage =
+      document.getElementsByClassName("p3_M1")[0].childNodes[0].childNodes[1]
+        .innerHTML;
     currentMessage = currentMessage.trim() + " " + $(this).text();
-    $('div[data-tab="10"]').focus();
+    document.getElementsByClassName(
+      "p3_M1"
+    )[0].childNodes[0].childNodes[1].innerHTML = "";
     document.execCommand("insertText", false, currentMessage);
-    $("#pprompts").remove();
+    $('div[data-tab="10"]').focus();
     $('div[data-tab="10"]').siblings().hide();
   });
 
   $(".complete").on("click", function () {
+    $("#pprompts").remove();
     document
       .getElementsByClassName("_2lMWa")[0]
       .removeEventListener("keydown", handlePrompts);
 
-    var currentMessage = $('div[data-tab="10"]').text();
-    $('div[data-tab="10"]').text("");
+    var currentMessage =
+      document.getElementsByClassName("p3_M1")[0].childNodes[0].childNodes[1]
+        .innerHTML;
+    // $('div[data-tab="10"]').text("");
     const lastindex = currentMessage.lastIndexOf(" ");
-    currentMessage = currentMessage.slice(0, lastindex);
-    ////console.log("Word Complete : " + currentMessage);
-    currentMessage = currentMessage + " " + $(this).text();
-    $('div[data-tab="10"]').focus();
+    if (lastindex == -1) {
+      currentMessage = $(this).text();
+    } else {
+      currentMessage = currentMessage.slice(0, lastindex);
+      ////console.log("Word Complete : " + currentMessage);
+      currentMessage = currentMessage + " " + $(this).text();
+    }
+    document.getElementsByClassName(
+      "p3_M1"
+    )[0].childNodes[0].childNodes[1].innerHTML = "";
     document.execCommand("insertText", false, currentMessage);
-    $("#pprompts").remove();
+    $('div[data-tab="10"]').focus();
     $('div[data-tab="10"]').siblings().hide();
   });
 
   function handlePrompts(e) {
-    e.stopImmediatePropagation();
+    // e.stopImmediatePropagation();
     if ($("#pprompts").length) {
       console.log("prompts : " + totalPrompts + " words : " + totalWords);
       //Up arrow
       if (e.keyCode === 38) {
         e.preventDefault();
-        e.stopPropagation();
+        e.stopImmediatePropagation();
         isSelect = true;
         if (isAutoPrompt) {
           console.log("prompt count : " + totalPrompts);
@@ -529,7 +546,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
       //Down arrow
       else if (e.keyCode === 40 || e.keyCode == 9) {
         e.preventDefault();
-        e.stopPropagation();
+        e.stopImmediatePropagation();
         isSelect = true;
         if (isAutoPrompt) {
           console.log("prompt count : " + totalPrompts);
@@ -555,7 +572,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
       // left arrow
       if (e.keyCode === 37) {
         e.preventDefault();
-        e.stopPropagation();
+        e.stopImmediatePropagation();
         isSelect = true;
         if (!isAutoPrompt) {
           console.log("word count : " + totalWords);
@@ -577,7 +594,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
       // right arow
       else if (e.keyCode === 39 || e.keyCode == 9) {
         e.preventDefault();
-        e.stopPropagation();
+        e.stopImmediatePropagation();
         isSelect = true;
         if (!isAutoPrompt) {
           console.log("word count : " + totalWords);
@@ -603,24 +620,24 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
       else if (e.keyCode === 27) {
         isSelect = false;
         e.preventDefault();
-        e.stopPropagation();
+        e.stopImmediatePropagation();
         $("#pprompts").remove();
         document
           .getElementsByClassName("_2lMWa")[0]
           .removeEventListener("keydown", handlePrompts);
         //console.log("Current Prompt key(escape)", currSelectedPrompt);
 
-        var currentMessage = $('div[data-tab="10"]').text();
-        $('div[data-tab="10"]').text("");
-        $('div[data-tab="10"]').focus();
-        document.execCommand("insertText", false, currentMessage);
+        // var currentMessage = $('div[data-tab="10"]').text();
+        // $('div[data-tab="10"]').text("");
+        // $('div[data-tab="10"]').focus();
+        // document.execCommand("insertText", false, currentMessage);
       }
       //Enter
       else if (e.keyCode === 13) {
         if (isSelect == true) {
           isSelect = false;
           e.preventDefault();
-          e.stopPropagation();
+          e.stopImmediatePropagation();
           document
             .getElementsByClassName("_2lMWa")[0]
             .removeEventListener("keydown", handlePrompts);
@@ -865,7 +882,7 @@ $(document).ready(function () {
   chat_name = "";
   newChatName = "";
   var interval = setInterval(function () {
-    console.log("Loading..." + curSelectWord);
+    // console.log("Loading..." + curSelectWord);
     if (emotion_call_flag == true) {
       //console.log("emotion_call_flag == true");
       emotion_call_flag = false;
@@ -981,7 +998,7 @@ $(document).ready(function () {
         newChatName = newChatName.split("[")[0];
         // console.log(newChatName);
       } catch (err) {
-        console.log("Errorsss");
+        // console.log("Errorsss");
       }
 
       var msgs = $(".focusable-list-item");

@@ -64,8 +64,7 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 
-emotion_loaded_model = pickle.load(open(
-    '/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/emotion_detection/emotion_pipeline_model.pickle', 'rb'))
+emotion_loaded_model = pickle.load(open('/home/versatile/RON/Btech_Project/Models/emotion_pipeline_model.pickle', 'rb'))
 # text_data = pd.DataFrame(['I am pissed at you', 'How are you?', 'What a weird experience that was!', 'I feel sparkling', 'I miss him', 'I loved the way you cooked for me'])
 # raw_data = text_data.copy()
 # line = data_preprocessing(text_data)
@@ -89,7 +88,7 @@ global modelPipeline
 # modelPipeline = pipeline(
 # 'text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
 modelPipeline = pipeline(
-    'text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/new_model_without_hbd/output')
+    'text-generation', model='/home/versatile/RON/Btech_Project/Models/OnlyTextModel/output')
 
 
 def get_trigram_freq(tokens):
@@ -147,7 +146,7 @@ for s in brown.sents():
     if not s[0].isalpha():
         continue
     if len(s[0]) > 2:
-        first_words_in_sent.append(s[0])
+        first_words_in_sent.append(s[0].capitalize())
 
 first_words_in_sent_set = set(first_words_in_sent)
 
@@ -184,16 +183,16 @@ tokens = brown.words()
 print("Brown added")
 # tokens += reuters.words()
 # print("Reuters added")
-tokens += nps_chat.words()
-print("NPS Chat added")
+# tokens += nps_chat.words()
+# print("NPS Chat added")
 # tokens += semcor.words()
 # print("Semcor added")
 # tokens += gutenberg.words()
 # print("Gutenberg added")
 # tokens += conll2000.words()
 # print("Conll 2000 added")
-tokens += movie_reviews.words()
-print("Movie Review added")
+# tokens += movie_reviews.words()
+# print("Movie Review added")
 
 bgs_freq = get_bigram_freq(tokens)
 tgs_freq = get_trigram_freq(tokens)
@@ -392,7 +391,7 @@ def wordcomplete():
         # pred_list_final
 
         # Setting manual which has the list of first words to the pred_list_final to send as response
-        manual = pred_list
+        complete = pred_list
         # manual = [["Hello", 1], ["Hi", 2]]
 
     # result = []
@@ -433,7 +432,7 @@ def calendar():
             try:
                 dt, meeting_words_list = timefhuman(line)
             except:
-                df = []
+                dt = []
                 meeting_words_list = []
             print("Dt: ", type(dt))
             print("Meeting words", meeting_words_list)
