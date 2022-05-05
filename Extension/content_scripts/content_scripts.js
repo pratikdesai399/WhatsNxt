@@ -1,5 +1,5 @@
 function sampleFun() {
-  ////console.log("SAMPLE PROMPTS");
+  //////console.log("SAMPLE PROMPTS");
 }
 
 // function getChatName() {
@@ -9,9 +9,9 @@ function sampleFun() {
 //     document.getElementsByClassName("_21nHd")[0].childNodes[0].childNodes;
 //   for (let i = 0; i < chat_title_element.length; i++) {
 //     if (chat_title_element[i].wholeText != undefined) {
-//       // console.log(chat_title_element[i].wholeText);
+//       // //console.log(chat_title_element[i].wholeText);
 //       chat_name += chat_title_element[i].wholeText;
-//       // console.log(chat_title_element);
+//       // //console.log(chat_title_element);
 //     } else {
 //       chat_name += chat_title_element[i].alt;
 //     }
@@ -20,27 +20,27 @@ function sampleFun() {
 // }
 
 function getMessageValue(messageIndex) {
-  // console.log(messageIndex);
+  // //console.log(messageIndex);
   var msg_value;
   var msgs =
     document.getElementsByClassName("frMpI -sxBV")[0].childNodes[0].childNodes;
   msgs = Array.from(msgs);
   msgs = msgs.slice(-messageIndex - 2);
-  // console.log(msgs);
+  // //console.log(msgs);
 
-  // console.log(msgs);
+  // //console.log(msgs);
   // old_latest_msg = msgs[messageIndex - 1];
   try {
     msg_value =
       msgs[1].childNodes[1].childNodes[0].childNodes[0].childNodes[0]
         .childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0]
         .childNodes[0].innerHTML;
-    // console.log(msg_value);
+    // //console.log(msg_value);
   } catch {
     msg_value = "";
-    console.log("error msg");
+    //console.log("error msg");
   }
-  // console.log(msg_value);
+  // //console.log(msg_value);
   return msg_value;
 }
 
@@ -49,13 +49,13 @@ function setMessageValue(messageIndex, msg_value) {
     document.getElementsByClassName("frMpI -sxBV")[0].childNodes[0].childNodes;
   msgs = Array.from(msgs);
   msgs = msgs.slice(-messageIndex - 1);
-  // console.log(msgs);
-  // console.log("IN CONTEXT: ");
+  // //console.log(msgs);
+  // //console.log("IN CONTEXT: ");
   try {
-    // console.log(msgs[0]);
+    // //console.log(msgs[0]);
     msgs[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].innerHTML =
       msg_value;
-    // console.log(msg_value);
+    // //console.log(msg_value);
   } catch {}
 }
 
@@ -63,7 +63,7 @@ function getChatboxData() {
   var chatbox_data =
     document.getElementsByClassName("uueGX")[0].childNodes[0].childNodes[1]
       .childNodes[0].childNodes[0].childNodes[1].childNodes[0].innerHTML;
-  console.log(chatbox_data);
+  //console.log(chatbox_data);
   return chatbox_data;
 }
 
@@ -78,7 +78,7 @@ function getChatName() {
   var author = document.getElementsByClassName(
     "_7UhW9 vy6Bb qyrsm KV-D4 fDxYl"
   )[1].innerHTML;
-  // console.log("getChatName", author);
+  // //console.log("getChatName", author);
   return author;
 }
 
@@ -95,7 +95,7 @@ function getContextforEmotionDetection() {
 
   var msgs = $(".focusable-list-item");
   msgs = msgs.slice(-10);
-  // ////console.log("Messages: " + msgs);
+  // //////console.log("Messages: " + msgs);
 
   msgs.each(function () {
     var classes = $(this).attr("class");
@@ -108,7 +108,7 @@ function getContextforEmotionDetection() {
     }
 
     var lines = $(this).find(".copyable-text");
-    // ////console.log("LINES: " + lines);
+    // //////console.log("LINES: " + lines);
 
     //If convesartion length is more than 2 than adding # at the end of each statement so that the model can easily predict till next #
     if (lines.length == 2) {
@@ -118,7 +118,7 @@ function getContextforEmotionDetection() {
       var message = $(lines[1]).text().trim();
       var msg = msgAuthor + " " + message + "#";
       messageDOMs.push(lines[1]);
-      // ////console.log(msg);
+      // //////console.log(msg);
       context += msg.trim();
 
       if (type === "msg_outgoing" && myName === "") {
@@ -131,10 +131,10 @@ function getContextforEmotionDetection() {
 
   // context += myName + " " + currentMessage;
   // context = context.trim();
-  ////console.log("EMOTION CONTEXT: ");
-  ////console.log(context);
+  //////console.log("EMOTION CONTEXT: ");
+  //////console.log(context);
   new_context = myName + "#" + context;
-  // //console.log("EMOTION: ", new_context);
+  // ////console.log("EMOTION: ", new_context);
   return [messageDOMs, new_context];
 }
 
@@ -151,10 +151,10 @@ function getContext(number_of_msgs) {
     document.getElementsByClassName("frMpI -sxBV")[0].childNodes[0].childNodes;
   msgs = Array.from(msgs);
   msgs = msgs.slice(-number_of_msgs);
-  // console.log(msgs);
+  // //console.log(msgs);
   old_latest_msg = msgs[number_of_msgs - 1];
-  console.log("IN CONTEXT: ");
-  console.log(old_latest_msg);
+  //console.log("IN CONTEXT: ");
+  //console.log(old_latest_msg);
   for (var i = 0; i < number_of_msgs; i++) {
     // try {
     var text = getMessageValue(i);
@@ -167,20 +167,20 @@ function getContext(number_of_msgs) {
   //       msg.childNodes[1].childNodes[0].childNodes[0].childNodes[0]
   //         .childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0]
   //         .childNodes[0].innerHTML;
-  //     // console.log(text);
+  //     // //console.log(text);
   //     msg.childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].innerHTML =
   //       "hi";
   //     context += text + "#";
   //   } catch {}
   // }
   context += "Myname";
-  console.log(context);
+  //console.log(context);
 
   author = getChatName();
-  console.log("author", author);
+  //console.log("author", author);
 
   chatbox_data = getChatboxData();
-  console.log("chatbox_data", chatbox_data);
+  //console.log("chatbox_data", chatbox_data);
 
   // msgs.each(function () {
   //   var classes = $(this).attr("class");
@@ -199,11 +199,11 @@ function getContext(number_of_msgs) {
   //     // var author = metadata.split("]")[1].trim().slice(0, -1);
   //     var author = metadata.split("]")[1].trim();
   //     var message = $(texts[1]).text().trim();
-  //     ////console.log("PRINGTING MESSAGE: ----->");
-  //     // //console.log($(texts[1]).text());
-  //     //console.log(message);
+  //     //////console.log("PRINGTING MESSAGE: ----->");
+  //     // ////console.log($(texts[1]).text());
+  //     ////console.log(message);
 
-  //     // //console.log(message);
+  //     // ////console.log(message);
   //     messageDOMs.push(texts[1]);
   //     // message = message.replaceAll('?', '<Q>')
   //     // message = message.replaceAll('&', '<AND>')
@@ -232,65 +232,127 @@ function getContext(number_of_msgs) {
 
   // // Trim all the whitespce at the end of the message, but keep one whitespce that is needed for word complete to work
   // if (/\s$/.test(currentMessage)) {
-  //   //console.log("SPACE FOUND");
+  //   ////console.log("SPACE FOUND");
   //   context += " ";
   // }
 
-  // //console.log("calender context: ");
-  // //console.log(context);
-  // // //console.log("CALENDAR: ", context);
-  // // console.log("Authors: ", authors);
-  // // console.log("Myname: ", myname);
+  // ////console.log("calender context: ");
+  // ////console.log(context);
+  // // ////console.log("CALENDAR: ", context);
+  // // //console.log("Authors: ", authors);
+  // // //console.log("Myname: ", myname);
   // return [context, messageDOMs, authors, myname];
   return [context, author, chatbox_data];
 }
 
-function getContextforAutocomplete() {
-  var myName = "";
+function getContextforAutocomplete(number_of_msgs) {
   var context = "";
+  var messageDOMs = [];
+  var authors = [];
+  var myname = "";
 
-  var msgs = $(".focusable-list-item");
-  msgs = msgs.slice(-5);
-  //////console.log("MESSAGES: "+ msgs);
+  var msgs = document.getElementsByClassName("frMpI -sxBV")[0].childNodes[0].childNodes;
+  msgs = Array.from(msgs);
+  msgs = msgs.slice(-number_of_msgs);
+  //console.log("MSGS: "+msgs);
+  old_latest_msg = msgs[number_of_msgs - 1];
+  //console.log("IN CONTEXT: ");
+  //console.log(old_latest_msg);
+  for (var i = 0; i < number_of_msgs; i++) {
+    // try {
+    var text = getMessageValue(i);
+    context += text + "#";
+    // } catch {}
+  }
+  contextList = context.split("#");
+  console.log("CONTEXT LIST: "+ contextList);
+  // for (const msg of msgs) {
+  //   try {
+  //     var text =
+  //       msg.childNodes[1].childNodes[0].childNodes[0].childNodes[0]
+  //         .childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0]
+  //         .childNodes[0].innerHTML;
+  //     // //console.log(text);
+  //     msg.childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].innerHTML =
+  //       "hi";
+  //     context += text + "#";
+  //   } catch {}
+  // }
+ 
 
-  msgs.each(function () {
-    var classes = $(this).attr("class");
-    var type = "";
+  author = getChatName();
+  //console.log("author", author);
 
-    if (classes.includes("message-in")) {
-      type = "msg_incoming";
-    } else if (classes.includes("message-out")) {
-      type = "msg_outgoing";
-    }
+  chatbox_data = getChatboxData();
+  //console.log("chatbox_data", chatbox_data);
 
-    var lines = $(this).find(".copyable-text");
-    //////console.log("LINES: "+ lines);
+  // msgs.each(function () {
+  //   var classes = $(this).attr("class");
+  //   var type = "";
 
-    //If convesartion length is more than 2 than adding # at the end of each statement so that the model can easily predict till next #
-    if (lines.length == 2) {
-      var metadata = $(lines[0]).data("prePlainText");
-      var msgAuthor = metadata.split("]")[1].trim();
-      var time = metadata.split("]")[0].split("[")[1].trim();
-      var message = $(lines[1]).text().trim();
-      context += msgAuthor + " " + message + "#";
+  //   if (classes.includes("message-in")) {
+  //     type = "msg_incoming";
+  //   } else if (classes.includes("message-out")) {
+  //     type = "msg_outgoing";
+  //   }
 
-      if (type === "msg_outgoing" && myName === "") {
-        myName = msgAuthor;
-      }
-    }
-  });
+  //   var texts = $(this).find(".copyable-text");
 
-  currentMessage = $('div[data-tab="10"]').text();
+  //   if (texts.length == 2) {
+  //     var metadata = $(texts[0]).data("prePlainText");
+  //     // var author = metadata.split("]")[1].trim().slice(0, -1);
+  //     var author = metadata.split("]")[1].trim();
+  //     var message = $(texts[1]).text().trim();
+  //     //////console.log("PRINGTING MESSAGE: ----->");
+  //     // ////console.log($(texts[1]).text());
+  //     ////console.log(message);
 
-  context += myName + " " + currentMessage;
-  context = context.trim();
-  //console.log("AUTOCOMPLETE: ", context);
-  return context;
+  //     // ////console.log(message);
+  //     messageDOMs.push(texts[1]);
+  //     // message = message.replaceAll('?', '<Q>')
+  //     // message = message.replaceAll('&', '<AND>')
+  //     // Old context for calendar format
+  //     // context += message + "<SPLIT>";
+
+  //     // Merging context functions
+  //     context += author + " " + message + "#";
+
+  //     if (type === "msg_outgoing" && myname === "") {
+  //       myname = author;
+  //     }
+  //     if (type != "msg_outgoing") {
+  //       authors.push(author.split(":")[0]);
+  //     } else if (authors.length < 1) {
+  //       chat_name = getChatName();
+  //       authors.push(chat_name);
+  //     }
+  //   }
+  // });
+
+  // currentMessage = $('div[data-tab="10"]').text();
+
+  // context += myname + " " + currentMessage;
+  // context = context.trim();
+
+  // // Trim all the whitespce at the end of the message, but keep one whitespce that is needed for word complete to work
+  // if (/\s$/.test(currentMessage)) {
+  //   ////console.log("SPACE FOUND");
+  //   context += " ";
+  // }
+
+  // ////console.log("calender context: ");
+  // ////console.log(context);
+  // // ////console.log("CALENDAR: ", context);
+  // // //console.log("Authors: ", authors);
+  // // //console.log("Myname: ", myname);
+  // return [context, messageDOMs, authors, myname];
+  return [context, author, chatbox_data];
+  
 }
 
 function getEmotionDetectionResults(emotion_context) {
   // Emotion context format for instagram: [context, author, chatbox_data]
-  // ////console.log("Emotion Detection RESULTS");
+  // //////console.log("Emotion Detection RESULTS");
   var context = emotion_context[0];
   var author = emotion_context[1];
   // var DOMs = emotion_context[1];
@@ -302,8 +364,8 @@ function getEmotionDetectionResults(emotion_context) {
     dataType: "json",
     data: { context: context },
     success: (res) => {
-      //console.log("Emotion done");
-      //console.log(res.EMOTION);
+      ////console.log("Emotion done");
+      ////console.log(res.EMOTION);
       globalThis.new_context = displayEmotionResults(
         res.EMOTION,
         context,
@@ -311,8 +373,8 @@ function getEmotionDetectionResults(emotion_context) {
       );
     },
   });
-  //console.log("New context: ");
-  //console.log(new_context);
+  ////console.log("New context: ");
+  ////console.log(new_context);
   return new_context;
 }
 
@@ -321,10 +383,10 @@ function getCalendarResults(calendar_context, new_context) {
   var context = new_context;
   // var DOMs = calendar_context[1];
   var author = calendar_context[1];
-  // console.log(authors);
+  // //console.log(authors);
   var myname = "Myname";
-  //console.log("Get new: ");
-  //console.log(context);
+  ////console.log("Get new: ");
+  ////console.log(context);
 
   $.ajax({
     url: "http://localhost:5000/calendar",
@@ -332,15 +394,15 @@ function getCalendarResults(calendar_context, new_context) {
     dataType: "json",
     data: { context: context },
     success: (d) => {
-      ////console.log("Calender Response: ");
-      ////console.log(d.CALENDAR);
+      //////console.log("Calender Response: ");
+      //////console.log(d.CALENDAR);
       displayCalendar(d.CALENDAR, context, author, myname);
     },
   });
 }
 
 function getWordCompleteResults(context, key_pressed) {
-  //console.log("Ajax context: ", context);
+  ////console.log("Ajax context: ", context);
   $.ajax({
     url: "http://localhost:5000/wordcomplete",
     crossDomain: true,
@@ -385,10 +447,10 @@ function getAutocompleteResults(context) {
         data: { context: context.trim() },
         success: (res) => {
           autocomplete = res.AUTOCOMPLETE;
-          //console.log("autocomplete: --->>>");
+          ////console.log("autocomplete: --->>>");
 
-          //console.log(autocomplete);
-          ////console.log(wordcomplete);
+          ////console.log(autocomplete);
+          //////console.log(wordcomplete);
           displayAutocompleteResults(wordcomplete, autocomplete, context);
         },
       });
@@ -397,18 +459,18 @@ function getAutocompleteResults(context) {
 }
 
 function displayAutocompleteResults(words, prompts, context, key_pressed) {
-  console.log("WORD COMPLETE RESULTS: ");
-  console.log("CONTEXT: ", context);
-  console.log("res.COMPLETE, res.PREDICT, res.MANUAL");
-  console.log("Complete: ", words[0]);
-  console.log("Predict: ", words[1]);
-  console.log("Manual: ", words[2]);
-  console.log("Key_pressed: ", key_pressed);
-  console.log("Prompt: ", prompts);
+  //console.log("WORD COMPLETE RESULTS: ");
+  //console.log("CONTEXT: ", context);
+  //console.log("res.COMPLETE, res.PREDICT, res.MANUAL");
+  //console.log("Complete: ", words[0]);
+  //console.log("Predict: ", words[1]);
+  //console.log("Manual: ", words[2]);
+  //console.log("Key_pressed: ", key_pressed);
+  //console.log("Prompt: ", prompts);
 
-  ////console.log("words : ", words);
+  //////console.log("words : ", words);
   $("#pprompts").remove();
-  $('div[data-tab="8"]').append(
+  $('div[class="             qF0y9          Igw0E     IwRSH       hLiUi      acqo5  vwCYk                                                                                                               "]').append(
     "<div id='pprompts' style='padding: 20px;margin: 20px 20px 10px 20px; border-radius: 15px; background:#ecffe9'></div>"
   );
   $("#pprompts").append(
@@ -450,7 +512,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
     i += 1;
     if (key_pressed == 0) {
       key_pressed = -1;
-      //console.log("IN MANUAL");
+      ////console.log("IN MANUAL");
 
       manual.forEach((w, i) => {
         $("#endrow").append(
@@ -461,7 +523,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
 
       propmtLen = propmtLen + manual.length;
     } else if (key_pressed != 32 && key_pressed != 0 && key_pressed != -1) {
-      //console.log("IN COMPLETE");
+      ////console.log("IN COMPLETE");
       if (pred_complete) {
         key_pressed = 0;
       } else {
@@ -473,8 +535,8 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
         let currentMessage = $('div[data-tab="10"]').text().trim();
         let lastindex = currentMessage.lastIndexOf(" ");
         let lastword = currentMessage.slice(lastindex, currentMessage.length);
-        //console.log("Lastword : " + lastword);
-        //console.log("Complete word : " + w[0]);
+        ////console.log("Lastword : " + lastword);
+        ////console.log("Complete word : " + w[0]);
         if (lastword.trim().localeCompare(w[0]) != 0) {
           $("#endrow").append(
             `<p class='complete words' id="w${id_count}" style='display:inline;float:left; border-radius: 5px;inline-size: min-content; padding: 12px;border: 1px solid #000000;margin: 0px 5px 0px 0px; font-size: 14px'>${w[0]}</p>`
@@ -485,7 +547,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
 
       propmtLen = propmtLen + complete.length;
     } else if (key_pressed == 32) {
-      //console.log("IN PREDICT");
+      ////console.log("IN PREDICT");
 
       if (pred_complete) {
         key_pressed = 0;
@@ -520,7 +582,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
     $(this).css("background", "#FFF");
     try {
       curSelectWord = parseInt($(this)[0].id[1]);
-      console.log("Hovor : " + curSelectWord);
+      //console.log("Hovor : " + curSelectWord);
     } catch (error) {
       curSelectWord = 0;
     }
@@ -531,7 +593,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
   //   $(this).css("background", "#FFF");
   //   try {
   //     curSelectWord = parseInt($(this)[0].id[1]);
-  //     console.log("Hovor : " + curSelectWord);
+  //     //console.log("Hovor : " + curSelectWord);
   //   } catch (error) {
   //     curSelectWord = 0;
   //   }
@@ -548,7 +610,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
   });
 
   const mouseoverEvent = new Event("mouseover");
-  //console.log("Before Dispatch : " + totalPrompts);
+  ////console.log("Before Dispatch : " + totalPrompts);
   // if (document.querySelector(".prompt")) {
   //   document.querySelector(".prompt").dispatchEvent(mouseoverEvent);
   // }
@@ -605,7 +667,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
       currentMessage = $(this).text();
     } else {
       currentMessage = currentMessage.slice(0, lastindex);
-      ////console.log("Word Complete : " + currentMessage);
+      //////console.log("Word Complete : " + currentMessage);
       currentMessage = currentMessage + " " + $(this).text();
     }
     document.getElementsByClassName(
@@ -619,14 +681,14 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
   function handlePrompts(e) {
     // e.stopImmediatePropagation();
     if ($("#pprompts").length) {
-      console.log("prompts : " + totalPrompts + " words : " + totalWords);
+      //console.log("prompts : " + totalPrompts + " words : " + totalWords);
       //Up arrow
       if (e.keyCode === 38) {
         e.preventDefault();
         e.stopImmediatePropagation();
         isSelect = true;
         if (isAutoPrompt) {
-          console.log("prompt count : " + totalPrompts);
+          //console.log("prompt count : " + totalPrompts);
           if (currSelectedPrompt == -1) {
             currSelectedPrompt = 0;
           } else {
@@ -635,12 +697,12 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
               currSelectedPrompt = totalPrompts - 1;
             }
           }
-          console.log("Current Prompt key(up)", currSelectedPrompt);
+          //console.log("Current Prompt key(up)", currSelectedPrompt);
           document
             .querySelectorAll(".prompt")
             [currSelectedPrompt].dispatchEvent(mouseoverEvent);
         }
-        // ////console.log("Current Prompt key(up)", currSelectedPrompt);
+        // //////console.log("Current Prompt key(up)", currSelectedPrompt);
         // document
         // .querySelectorAll(".prompt")
         // [currSelectedPrompt].dispatchEvent(mouseoverEvent);
@@ -651,7 +713,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
         e.stopImmediatePropagation();
         isSelect = true;
         if (isAutoPrompt) {
-          console.log("prompt count : " + totalPrompts);
+          //console.log("prompt count : " + totalPrompts);
           if (currSelectedPrompt == -1) {
             currSelectedPrompt = 0;
           } else {
@@ -660,12 +722,12 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
               currSelectedPrompt = 0;
             }
           }
-          console.log("Current Prompt key(down)", currSelectedPrompt);
+          //console.log("Current Prompt key(down)", currSelectedPrompt);
           document
             .querySelectorAll(".prompt")
             [currSelectedPrompt].dispatchEvent(mouseoverEvent);
         }
-        // ////console.log("Current Prompt key(down)", currSelectedPrompt);
+        // //////console.log("Current Prompt key(down)", currSelectedPrompt);
         // document
         //   .querySelectorAll(".prompt")
         //   [currSelectedPrompt].dispatchEvent(mouseoverEvent);
@@ -677,7 +739,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
         e.stopImmediatePropagation();
         isSelect = true;
         if (!isAutoPrompt) {
-          console.log("word count : " + totalWords);
+          //console.log("word count : " + totalWords);
           if (curSelectWord == -1) {
             curSelectWord = 0;
           } else {
@@ -686,7 +748,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
               curSelectWord = totalWords - 1;
             }
           }
-          console.log("Cur select word : " + curSelectWord);
+          //console.log("Cur select word : " + curSelectWord);
           document
             .getElementById("w" + curSelectWord)
             .dispatchEvent(mouseoverEvent);
@@ -699,7 +761,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
         e.stopImmediatePropagation();
         isSelect = true;
         if (!isAutoPrompt) {
-          console.log("word count : " + totalWords);
+          //console.log("word count : " + totalWords);
           if (curSelectWord == -1) {
             curSelectWord = 0;
           } else {
@@ -711,7 +773,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
           // if (curSelectWord >= totalWords) {
           //   curSelectWord = 0;
           // }
-          console.log("Cur select word : " + curSelectWord);
+          //console.log("Cur select word : " + curSelectWord);
           document
             .getElementById("w" + curSelectWord)
             .dispatchEvent(mouseoverEvent);
@@ -727,7 +789,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
         document
           .getElementsByClassName("_2lMWa")[0]
           .removeEventListener("keydown", handlePrompts);
-        //console.log("Current Prompt key(escape)", currSelectedPrompt);
+        ////console.log("Current Prompt key(escape)", currSelectedPrompt);
 
         // var currentMessage = $('div[data-tab="10"]').text();
         // $('div[data-tab="10"]').text("");
@@ -744,7 +806,7 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
             .getElementsByClassName("_2lMWa")[0]
             .removeEventListener("keydown", handlePrompts);
           if (isAutoPrompt) {
-            //console.log("Current Prompt key(enter)", currSelectedPrompt);
+            ////console.log("Current Prompt key(enter)", currSelectedPrompt);
             document.querySelectorAll(".prompt")[currSelectedPrompt].click();
           } else {
             document.getElementById("w" + curSelectWord).click();
@@ -766,14 +828,14 @@ function calculateAverageEmotion(emotionListVals) {
   for (const num of emotionListVals) {
     counts[num] = counts[num] ? counts[num] + 1 : 1;
   }
-  // console.log("Average");
+  // //console.log("Average");
   // old_name =
   //   document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML;
   old_name = getChatName();
-  // console.log(old_name);
+  // //console.log(old_name);
   if (old_name.includes("[")) {
     old_name = old_name.split("]")[0];
-    // console.log(old_name);
+    // //console.log(old_name);
     for (const em of Object.keys(counts)) {
       if (!old_name.includes(em)) {
         old_name += em;
@@ -783,7 +845,7 @@ function calculateAverageEmotion(emotionListVals) {
     setChatName(old_name);
     // document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML =
     //   old_name;
-    // console.log(old_name);
+    // //console.log(old_name);
   } else {
     setChatName(getChatName() + " [");
     // document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML +=
@@ -797,18 +859,18 @@ function calculateAverageEmotion(emotionListVals) {
 
     // document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML += "]";
     setChatName(getChatName() + "]");
-    // console.log("NEW");
+    // //console.log("NEW");
   }
-  //console.log(counts);
+  ////console.log(counts);
   return counts;
 }
 
 function displayEmotionResults(vals, context, author) {
-  ////console.log("In Display emotion function");
+  //////console.log("In Display emotion function");
   var myname;
   var msgs = [];
-  // //console.log("context: ");
-  // //console.log(context);
+  // ////console.log("context: ");
+  // ////console.log(context);
   // Structure of context: @rhugaved:#Aditya Patil Jio: Movie ahe
   // 1 hr remaining#@rhugaved: Nice#@rhugaved: Enjoy#
   // So, in below split we split at first ":", which gives an array like this
@@ -818,82 +880,82 @@ function displayEmotionResults(vals, context, author) {
   // context = context[1].split("#").slice(1, -1);
 
   // For new combined context format:
-  // console.log(context);
+  // //console.log(context);
   split = context.match(/((.|\n)*)\#(.|\n)*/);
   context = split[1];
   // myname = split[2];
   context = context.split("#");
-  console.log("display emotion");
-  console.log(context);
-  console.log(vals);
-
-  //console.log("displayEmotionResults context: ");
+  //console.log("display emotion");
   //console.log(context);
+  //console.log(vals);
+
+  ////console.log("displayEmotionResults context: ");
+  ////console.log(context);
 
   // for msg in context.split("#")[:-1]:
   for (let i = 0; i < context.length; i++) {
-    //console.log(context[i]);
-    //console.log(context[i].split(/:(.*)/s).slice(0, 2)[1]);
-    //console.log(context[i].split(/:(.*)/s).slice(0, 2)[1].trim());
+    ////console.log(context[i]);
+    ////console.log(context[i].split(/:(.*)/s).slice(0, 2)[1]);
+    ////console.log(context[i].split(/:(.*)/s).slice(0, 2)[1].trim());
 
     msgs.push(context[i].split(/:(.*)/s).slice(0, 2)[1].trim());
-    //console.log("Checking for :--->>>");
-    // //console.log(context[i].split(":", 1));
+    ////console.log("Checking for :--->>>");
+    // ////console.log(context[i].split(":", 1));
 
     // context = context[i].split(/:(.*)/s).slice(0, 2);
     // myname = context[0];
     // context = context[1].split("#").slice(1, -1);
-    //console.log(context[i].split(/:(.*)/s).slice(0, 2)[1].trim());
+    ////console.log(context[i].split(/:(.*)/s).slice(0, 2)[1].trim());
   }
-  console.log("Messages: ");
-  console.log(msgs);
+  //console.log("Messages: ");
+  //console.log(msgs);
   var new_context = "";
 
-  // //console.log("IN DISPLAY EMOTION: ");
+  // ////console.log("IN DISPLAY EMOTION: ");
   for (var i = 0; i < vals.length; i++) {
     var temp = vals[i];
     var message = msgs[i];
-    // console.log(message + " #" + temp + "#");
+    // //console.log(message + " #" + temp + "#");
     // $(DOMs[i]).text("");
-    // //console.log("<span>" + message + " #" + temp + "#" + "</span>");
+    // ////console.log("<span>" + message + " #" + temp + "#" + "</span>");
     new_context += message + " [" + temp + "]" + "<SPLIT>";
     // $(DOMs[i]).append("<span>" + message + " [" + temp + "]" + "</span>");
-    console.log(message + "[" + temp + "]");
+    //console.log(message + "[" + temp + "]");
     setMessageValue(i, message + "[" + temp + "]");
   }
   counts = calculateAverageEmotion(vals);
 
   // document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML +=
   //   counts;
-  //console.log("======name======");
+  ////console.log("======name======");
 
-  // //console.log("emotion context");
-  // //console.log(new_context);
+  // ////console.log("emotion context");
+  // ////console.log(new_context);
   return new_context;
 }
 
 function displayCalendar(vals, context, author, selfName) {
-  // ////console.log("In Display Calendar function");
+  // //////console.log("In Display Calendar function");
   var context = context.split("<SPLIT>");
   // authors = [...new Set(authors)];
   var nonSelfNames = "";
-  // console.log(authors);
+  // //console.log(authors);
   // if (authors.length > 1) {
   //   nonSelfNames = authors.join(", ");
   // } else {
   //   nonSelfNames = authors[0];
   // }
 
-  ////console.log(selfName, "-|-", nonSelfNames);
-  // //console.log("DISPLAY CALENDAR: ");
-  // //console.log(vals, vals.length);
-  //console.log(context);
+  //////console.log(selfName, "-|-", nonSelfNames);
+  // ////console.log("DISPLAY CALENDAR: ");
+  // ////console.log(vals, vals.length);
+  ////console.log(context);
 
   for (var i = 0; i < vals.length; i++) {
     var temp = vals[i];
-    ////console.log(context[i], temp);
+    //////console.log(context[i], temp);
     if (temp.has_calendar) {
-      ////console.log("In if");
+      //////console.log("In if");
       var message = context[i];
       var day = String(temp.day);
       if (parseInt(day) < 10) {
@@ -913,11 +975,11 @@ function displayCalendar(vals, context, author, selfName) {
         minute = "0" + minute;
       }
       // var sec = "0";
-      ////console.log("Hour: ");
-      ////console.log(hour);
-      ////console.log(minute);
-      ////console.log(String(parseInt(minute) + 30));
-      // //console.log(
+      //////console.log("Hour: ");
+      //////console.log(hour);
+      //////console.log(minute);
+      //////console.log(String(parseInt(minute) + 30));
+      // ////console.log(
       //   year +
       //     month +
       //     day +
@@ -958,8 +1020,8 @@ function displayCalendar(vals, context, author, selfName) {
         String(parseInt(minute) + 30) +
         "00";
 
-      // console.log(nonSelfNames);
-      console.log(link);
+      // //console.log(nonSelfNames);
+      //console.log(link);
       setMessageValue(
         i,
         "<span>" +
@@ -972,15 +1034,15 @@ function displayCalendar(vals, context, author, selfName) {
           // message.slice(temp.end) +
           "</span>"
       );
-      ////console.log("OUTSDIE");
+      //////console.log("OUTSDIE");
     }
   }
 }
 
 $(document).ready(function () {
   var chat_name, newChatName;
-  console.log("WhatsNxt?");
-  console.log();
+  //console.log("WhatsNxt?");
+  //console.log();
   tabKeyPress = true;
   totalPrompts = 0;
   currSelectedPrompt = -1;
@@ -999,60 +1061,62 @@ $(document).ready(function () {
     //     1
     // ) {
     //   flag = false;
-    //   console.log("context");
+    //   //console.log("context");
     //   var context = getContext(10);
     //   var new_context = getEmotionDetectionResults(context);
     //   getCalendarResults(context, new_context);
     //   // getAutocompleteResults(context[0]);
-    //   console.log(context);
+    //   //console.log(context);
     // }
 
-    // console.log("Loading..." + curSelectWord);
+    // //console.log("Loading..." + curSelectWord);
     if (emotion_call_flag == true) {
-      //console.log("emotion_call_flag == true");
+      ////console.log("emotion_call_flag == true");
       emotion_call_flag = false;
       // Format of returned context: [context, messageDOMs, authors, myname]
-      // console.log("Calling EMOTION");
+      // //console.log("Calling EMOTION");
       var context = getContext(10);
-      console.log("old_latest_msg");
+      //console.log("old_latest_msg");
 
-      console.log(old_latest_msg);
+      //console.log(old_latest_msg);
 
       // var emotion_context = getContextforEmotionDetection();
-      ////console.log("CONTEXT: " + calendar_context);
-      //console.log("Calling Emotion 1");
+      //////console.log("CONTEXT: " + calendar_context);
+      ////console.log("Calling Emotion 1");
       var new_context = getEmotionDetectionResults(context);
       getCalendarResults(context, new_context);
     }
     if (tabKeyPress == false) {
-      console.log("INSIDE Tab key");
+      //console.log("INSIDE Tab key");
       if (
         document.getElementsByClassName("_7UhW9 vy6Bb qyrsm KV-D4 fDxYl")
           .length > 1
       ) {
-        console.log("IN INSTAGRAM");
+        //console.log("IN INSTAGRAM");
         // chat_name =
         //   document.getElementsByClassName("_21nHd")[0].childNodes[0]
         //     .childNodes[0].data;
 
         chat_name = getChatName();
 
-        // console.log("CHAT NAME IN INNER LOOP: " + chat_name);
+        // //console.log("CHAT NAME IN INNER LOOP: " + chat_name);
         chat_name = chat_name.split("[")[0];
-        // console.log("CHAT NAME IN INNER LOOP: " + chat_name);
+        // //console.log("CHAT NAME IN INNER LOOP: " + chat_name);
 
-        // ////console.log($('[data-tab="10"]'));
-        //////console.log("Event Listerner");
+        // //////console.log($('[data-tab="10"]'));
+        ////////console.log("Event Listerner");
 
         // // Format of returned context: [context, messageDOMs, authors, myname]
         // var context = getContext();
         // // var emotion_context = getContextforEmotionDetection();
-        // ////console.log("CONTEXT: " + calendar_context);
-        // //console.log("Calling Emotion 1");
+        // //////console.log("CONTEXT: " + calendar_context);
+        // ////console.log("Calling Emotion 1");
         // var new_context = getEmotionDetectionResults(context);
         // // getCalendarResults(context, new_context);
-        $('[data-tab="10"]').on("keydown", function (e) {
+        $('[class="X3a-9"]').on("keydown",function (e) {
+          //console.log("SHIFT");
           if (e.keyCode == 16) {
+            
             isShift = true;
           }
 
@@ -1062,23 +1126,23 @@ $(document).ready(function () {
             e.preventDefault();
             isAutoPrompt = true;
             //tabKeyPress = true;
-            //////console.log(tabKeyPress);
-            $('[data-tab="10"]').blur();
-            //console.log("TAB KEY PRESSED");
+            ////////console.log(tabKeyPress);
+            $('[class="X3a-9"]').blur();
+            ////console.log("TAB KEY PRESSED");
             //Generate Prompts
             //sampleFun();
             // var context = getContextforAutocomplete();
 
             // Format of returned context: [context, messageDOMs, authors, myname]
-            var context = getContext(3);
+            var context = getContext(5);
             // var emotion_context = getContextforEmotionDetection();
-            // //console.log("CONTEXT: " + calendar_context);
-            //console.log("Calling Emotion 2");
+            // ////console.log("CONTEXT: " + calendar_context);
+            ////console.log("Calling Emotion 2");
 
             // var new_context = getEmotionDetectionResults(context);
             // getCalendarResults(context, new_context);
             currSelectedPrompt = 0;
-            //console.log(context[0]);
+            console.log("TABKEYPRESS CONTEXT TO AUTOCOMPLETE : "+context[0]);
             getAutocompleteResults(context[0]);
           } else if (
             (e.keyCode >= 65 && e.keyCode <= 90) ||
@@ -1093,31 +1157,31 @@ $(document).ready(function () {
             // So, first we convert the keycode to char
             var last_char = String.fromCharCode(key_pressed).toLowerCase();
 
-            //console.log("KEY PRESSED");
+            ////console.log("KEY PRESSED");
             var context = getContext(5);
-            //console.log(context[0]);
-            //console.log("LAst char: ", last_char);
+            ////console.log(context[0]);
+            ////console.log("LAst char: ", last_char);
 
             // key_pressed == 8 is for backspace, so, for backspace, we remove the last char
             if (key_pressed != 8) {
               context[0] = context[0] + last_char;
-              //console.log(context[0]);
+              ////console.log(context[0]);
             } else {
               context[0] = context[0].slice(0, -1);
-              //console.log(context[0]);
+              ////console.log(context[0]);
             }
 
             getWordCompleteResults(context[0], key_pressed);
           }
         });
 
-        $('[data-tab="10"]').on("keyup", function (e) {
+        $('[class="X3a-9"]').on("keyup", function (e) {
           isShift = false;
         });
 
         tabKeyPress = true;
 
-        //////console.log("Aha Tab key pressed is true now")
+        ////////console.log("Aha Tab key pressed is true now")
         //clearInterval(interval);
       }
     } else {
@@ -1127,11 +1191,11 @@ $(document).ready(function () {
 
       try {
         newChatName = getChatName();
-        // console.log(newChatName);
+        // //console.log(newChatName);
         newChatName = newChatName.split("[")[0];
-        // console.log(newChatName);
+        // //console.log(newChatName);
       } catch (err) {
-        // console.log("Errorsss");
+        // //console.log("Errorsss");
       }
 
       var msgs =
@@ -1149,11 +1213,11 @@ $(document).ready(function () {
         new_latest_msg != undefined &&
         newChatName == chat_name
       ) {
-        // console.log("different contexts");
-        // console.log("NEW CHAT NAME: " + newChatName);
-        // console.log("CHAT NAME: " + chat_name);
+        // //console.log("different contexts");
+        // //console.log("NEW CHAT NAME: " + newChatName);
+        // //console.log("CHAT NAME: " + chat_name);
         var context_1 = getContext(1);
-        // console.log(context_1);
+        // //console.log(context_1);
         var new_context = getEmotionDetectionResults(context_1);
         getCalendarResults(context_1, new_context);
         emotion_call_flag = false;
@@ -1162,25 +1226,25 @@ $(document).ready(function () {
         $("#pprompts").remove();
         isSelect = false;
         document
-          .getElementsByClassName("_2lMWa")[0]
+          .getElementsByClassName("X3a-9")[0]
           .removeEventListener("keydown", handlePrompts);
-        //console.log("Current Prompt key(escape)", currSelectedPrompt);
+        ////console.log("Current Prompt key(escape)", currSelectedPrompt);
 
-        var currentMessage = $('div[data-tab="10"]').text();
-        $('div[data-tab="10"]').text("");
-        $('div[data-tab="10"]').focus();
+        var currentMessage = $('div[class="wpO6b  "]').text();
+        $('div[class="wpO6b  "]').text("");
+        $('div[class="wpO6b  "]').focus();
         document.execCommand("insertText", false, currentMessage);
       }
-      // console.log("NEW CHAT NAME: " + newChatName);
-      // console.log("CHAT NAME: " + chat_name);
+      // //console.log("NEW CHAT NAME: " + newChatName);
+      // //console.log("CHAT NAME: " + chat_name);
       if (newChatName != chat_name) {
-        //////console.log(chat_name);
-        //////console.log(newChatName);
+        ////////console.log(chat_name);
+        ////////console.log(newChatName);
         //console.log("UNBINDING NOW");
-        $('[data-tab="10"]').off("keydown");
+        $('[class="X3a-9"]').off("keydown");
         tabKeyPress = false;
         emotion_call_flag = true;
-        // console.log("emotion_call_flag == False");
+        // //console.log("emotion_call_flag == False");
       }
     }
 
