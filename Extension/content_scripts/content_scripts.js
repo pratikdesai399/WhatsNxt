@@ -937,7 +937,7 @@ $(document).ready(function () {
             // var context = getContextforAutocomplete();
 
             // Format of returned context: [context, messageDOMs, authors, myname]
-            var context = getContext(5);
+            var context = getContext(3);
             // var emotion_context = getContextforEmotionDetection();
             // //console.log("CONTEXT: " + calendar_context);
             //console.log("Calling Emotion 2");

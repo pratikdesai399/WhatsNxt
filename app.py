@@ -4,6 +4,7 @@
 # from traceback import print_tb
 # from email.policy import default
 # from unittest.util import _MAX_LENGTH
+from distutils.dep_util import newer
 from xml.dom.minidom import parseString
 from flask import Flask, jsonify, request
 import sys
@@ -64,7 +65,8 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 
-emotion_loaded_model = pickle.load(open('/home/versatile/RON/Btech_Project/Models/emotion_pipeline_model.pickle', 'rb'))
+emotion_loaded_model = pickle.load(open(
+    '/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/emotion_detection/emotion_pipeline_model.pickle', 'rb'))
 # text_data = pd.DataFrame(['I am pissed at you', 'How are you?', 'What a weird experience that was!', 'I feel sparkling', 'I miss him', 'I loved the way you cooked for me'])
 # raw_data = text_data.copy()
 # line = data_preprocessing(text_data)
@@ -88,7 +90,7 @@ global modelPipeline
 # modelPipeline = pipeline(
 # 'text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
 modelPipeline = pipeline(
-    'text-generation', model='/home/versatile/RON/Btech_Project/Models/OnlyTextModel/output')
+    'text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/rhugaved_without_name/output')
 
 
 def get_trigram_freq(tokens):
@@ -299,6 +301,11 @@ def emotion():
 @app.route("/autocomplete")
 def autocomplete():
     context = request.args.get('context', default='', type=str)
+    print("Original context: ", context)
+    # context = context.split("#")
+    # print("List: ", context)
+    context = re.sub(r' \[(.*?)\]', '', context)
+    print("After regex: ", context)
     # new_context = context.split("##")[-6:]
     # context = ""
     # for c in new_context:
@@ -315,13 +322,18 @@ def autocomplete():
     #     if len(temp[0]['generated_text']) - len(context) > 3:
     #         result.append(temp[0])
     #         i = i + 1
-    result = modelPipeline(context, max_length=120, num_return_sequences=3, do_sample=True,
+    result = modelPipeline(context, max_length=100, num_return_sequences=5, do_sample=True,
                            eos_token_id=2, pad_token_id=0, skip_special_tokens=True, top_k=50, top_p=0.95)
 
     print("Result: {}".format(result))
+    new_result = []
+    for dic in result:
+        gen_text = dic['generated_text']
+        new_result.append({'generated_text': gen_text.replace(context, "")})
 
+    print(new_result)
     res = jsonify({
-        "AUTOCOMPLETE": result
+        "AUTOCOMPLETE": new_result
     })
     return res
 
