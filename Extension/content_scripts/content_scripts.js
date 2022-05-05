@@ -78,71 +78,95 @@ function getContext(number_of_msgs) {
   var authors = [];
   var myname = "";
 
-  var msgs = $(".focusable-list-item");
+  var msgs =
+    document.getElementsByClassName("frMpI -sxBV")[0].childNodes[0].childNodes;
+  msgs = Array.from(msgs);
   msgs = msgs.slice(-number_of_msgs);
   // console.log(msgs);
   old_latest_msg = msgs[number_of_msgs - 1];
   //console.log("IN CONTEXT: ");
-  msgs.each(function () {
-    var classes = $(this).attr("class");
-    var type = "";
-
-    if (classes.includes("message-in")) {
-      type = "msg_incoming";
-    } else if (classes.includes("message-out")) {
-      type = "msg_outgoing";
-    }
-
-    var texts = $(this).find(".copyable-text");
-
-    if (texts.length == 2) {
-      var metadata = $(texts[0]).data("prePlainText");
-      // var author = metadata.split("]")[1].trim().slice(0, -1);
-      var author = metadata.split("]")[1].trim();
-      var message = $(texts[1]).text().trim();
-      ////console.log("PRINGTING MESSAGE: ----->");
-      // //console.log($(texts[1]).text());
-      //console.log(message);
-
-      // //console.log(message);
-      messageDOMs.push(texts[1]);
-      // message = message.replaceAll('?', '<Q>')
-      // message = message.replaceAll('&', '<AND>')
-      // Old context for calendar format
-      // context += message + "<SPLIT>";
-
-      // Merging context functions
-      context += author + " " + message + "#";
-
-      if (type === "msg_outgoing" && myname === "") {
-        myname = author;
-      }
-      if (type != "msg_outgoing") {
-        authors.push(author.split(":")[0]);
-      } else if (authors.length < 1) {
-        chat_name = getChatName();
-        authors.push(chat_name);
-      }
-    }
-  });
-
-  currentMessage = $('div[data-tab="10"]').text();
-
-  context += myname + " " + currentMessage;
-  context = context.trim();
-
-  // Trim all the whitespce at the end of the message, but keep one whitespce that is needed for word complete to work
-  if (/\s$/.test(currentMessage)) {
-    //console.log("SPACE FOUND");
-    context += " ";
+  for (const msg of msgs) {
+    try {
+      var text =
+        msg.childNodes[1].childNodes[0].childNodes[0].childNodes[0]
+          .childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0]
+          .childNodes[0].innerHTML;
+      // console.log(text);
+      context += text + "#";
+    } catch {}
   }
+  console.log(context);
 
-  //console.log("calender context: ");
-  //console.log(context);
-  // //console.log("CALENDAR: ", context);
-  // console.log("Authors: ", authors);
-  // console.log("Myname: ", myname);
-  return [context, messageDOMs, authors, myname];
+  author = document.getElementsByClassName("_7UhW9 vy6Bb qyrsm KV-D4 fDxYl")[1]
+    .innerHTML;
+  console.log(author);
+
+  chatbox_data =
+    document.getElementsByClassName("uueGX")[0].childNodes[0].childNodes[1]
+      .childNodes[0].childNodes[0].childNodes[1].childNodes[0].innerHTML;
+  console.log(chatbox_data);
+
+  // msgs.each(function () {
+  //   var classes = $(this).attr("class");
+  //   var type = "";
+
+  //   if (classes.includes("message-in")) {
+  //     type = "msg_incoming";
+  //   } else if (classes.includes("message-out")) {
+  //     type = "msg_outgoing";
+  //   }
+
+  //   var texts = $(this).find(".copyable-text");
+
+  //   if (texts.length == 2) {
+  //     var metadata = $(texts[0]).data("prePlainText");
+  //     // var author = metadata.split("]")[1].trim().slice(0, -1);
+  //     var author = metadata.split("]")[1].trim();
+  //     var message = $(texts[1]).text().trim();
+  //     ////console.log("PRINGTING MESSAGE: ----->");
+  //     // //console.log($(texts[1]).text());
+  //     //console.log(message);
+
+  //     // //console.log(message);
+  //     messageDOMs.push(texts[1]);
+  //     // message = message.replaceAll('?', '<Q>')
+  //     // message = message.replaceAll('&', '<AND>')
+  //     // Old context for calendar format
+  //     // context += message + "<SPLIT>";
+
+  //     // Merging context functions
+  //     context += author + " " + message + "#";
+
+  //     if (type === "msg_outgoing" && myname === "") {
+  //       myname = author;
+  //     }
+  //     if (type != "msg_outgoing") {
+  //       authors.push(author.split(":")[0]);
+  //     } else if (authors.length < 1) {
+  //       chat_name = getChatName();
+  //       authors.push(chat_name);
+  //     }
+  //   }
+  // });
+
+  // currentMessage = $('div[data-tab="10"]').text();
+
+  // context += myname + " " + currentMessage;
+  // context = context.trim();
+
+  // // Trim all the whitespce at the end of the message, but keep one whitespce that is needed for word complete to work
+  // if (/\s$/.test(currentMessage)) {
+  //   //console.log("SPACE FOUND");
+  //   context += " ";
+  // }
+
+  // //console.log("calender context: ");
+  // //console.log(context);
+  // // //console.log("CALENDAR: ", context);
+  // // console.log("Authors: ", authors);
+  // // console.log("Myname: ", myname);
+  // return [context, messageDOMs, authors, myname];
+  return [context, author, chatbox_data];
 }
 
 function getContextforAutocomplete() {
@@ -296,13 +320,14 @@ function getAutocompleteResults(context) {
 }
 
 function displayAutocompleteResults(words, prompts, context, key_pressed) {
-  //console.log("WORD COMPLETE RESULTS: ");
-  //console.log("CONTEXT: ", context);
-  //console.log("res.COMPLETE, res.PREDICT, res.MANUAL");
-  //console.log("Complete: ", words[0]);
-  //console.log("Predict: ", words[1]);
-  //console.log("Manual: ", words[2]);
-  //console.log("Key_pressed: ", key_pressed);
+  console.log("WORD COMPLETE RESULTS: ");
+  console.log("CONTEXT: ", context);
+  console.log("res.COMPLETE, res.PREDICT, res.MANUAL");
+  console.log("Complete: ", words[0]);
+  console.log("Predict: ", words[1]);
+  console.log("Manual: ", words[2]);
+  console.log("Key_pressed: ", key_pressed);
+  console.log("Prompt: ", prompts);
 
   ////console.log("words : ", words);
   $("#pprompts").remove();
@@ -868,7 +893,8 @@ function displayCalendar(vals, DOMs, context, authors, selfName) {
 
 $(document).ready(function () {
   var chat_name, newChatName;
-  ////console.log("WhatsNxt?");
+  console.log("WhatsNxt?");
+  console.log();
   tabKeyPress = true;
   totalPrompts = 0;
   currSelectedPrompt = -1;
@@ -882,6 +908,16 @@ $(document).ready(function () {
   chat_name = "";
   newChatName = "";
   var interval = setInterval(function () {
+    if (
+      document.getElementsByClassName("_7UhW9 vy6Bb qyrsm KV-D4 fDxYl").length >
+      1
+    ) {
+      console.log("context");
+      var context = getContext(10);
+      getAutocompleteResults(context[0]);
+      console.log(context);
+    }
+
     // console.log("Loading..." + curSelectWord);
     if (emotion_call_flag == true) {
       //console.log("emotion_call_flag == true");
@@ -896,8 +932,13 @@ $(document).ready(function () {
       getCalendarResults(context, new_context);
     }
     if (tabKeyPress == false) {
-      // //console.log("INSIDE Tab key");
-      if ($('[data-tab="10"]').length > 0) {
+      console.log("INSIDE Tab key");
+      if (
+        document.getElementsByClassName(
+          "DPiy6 qF0y9 Igw0E IwRSH eGOV_ acqo5 vwCYk"
+        ).length > 0
+      ) {
+        console.log("IN INSTAGRAM");
         // chat_name =
         //   document.getElementsByClassName("_21nHd")[0].childNodes[0]
         //     .childNodes[0].data;
