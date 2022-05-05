@@ -2,21 +2,90 @@ function sampleFun() {
   ////console.log("SAMPLE PROMPTS");
 }
 
-function getChatName() {
-  var chat_name = "";
+// function getChatName() {
+//   var chat_name = "";
 
-  chat_title_element =
-    document.getElementsByClassName("_21nHd")[0].childNodes[0].childNodes;
-  for (let i = 0; i < chat_title_element.length; i++) {
-    if (chat_title_element[i].wholeText != undefined) {
-      // console.log(chat_title_element[i].wholeText);
-      chat_name += chat_title_element[i].wholeText;
-      // console.log(chat_title_element);
-    } else {
-      chat_name += chat_title_element[i].alt;
-    }
+//   chat_title_element =
+//     document.getElementsByClassName("_21nHd")[0].childNodes[0].childNodes;
+//   for (let i = 0; i < chat_title_element.length; i++) {
+//     if (chat_title_element[i].wholeText != undefined) {
+//       // console.log(chat_title_element[i].wholeText);
+//       chat_name += chat_title_element[i].wholeText;
+//       // console.log(chat_title_element);
+//     } else {
+//       chat_name += chat_title_element[i].alt;
+//     }
+//   }
+//   return chat_name;
+// }
+
+function getMessageValue(messageIndex) {
+  // console.log(messageIndex);
+  var msg_value;
+  var msgs =
+    document.getElementsByClassName("frMpI -sxBV")[0].childNodes[0].childNodes;
+  msgs = Array.from(msgs);
+  msgs = msgs.slice(-messageIndex - 2);
+  // console.log(msgs);
+
+  // console.log(msgs);
+  // old_latest_msg = msgs[messageIndex - 1];
+  try {
+    msg_value =
+      msgs[1].childNodes[1].childNodes[0].childNodes[0].childNodes[0]
+        .childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0]
+        .childNodes[0].innerHTML;
+    // console.log(msg_value);
+  } catch {
+    msg_value = "";
+    console.log("error msg");
   }
-  return chat_name;
+  // console.log(msg_value);
+  return msg_value;
+}
+
+function setMessageValue(messageIndex, msg_value) {
+  var msgs =
+    document.getElementsByClassName("frMpI -sxBV")[0].childNodes[0].childNodes;
+  msgs = Array.from(msgs);
+  msgs = msgs.slice(-messageIndex - 1);
+  // console.log(msgs);
+  // console.log("IN CONTEXT: ");
+  try {
+    // console.log(msgs[0]);
+    msgs[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].innerHTML =
+      msg_value;
+    // console.log(msg_value);
+  } catch {}
+}
+
+function getChatboxData() {
+  var chatbox_data =
+    document.getElementsByClassName("uueGX")[0].childNodes[0].childNodes[1]
+      .childNodes[0].childNodes[0].childNodes[1].childNodes[0].innerHTML;
+  console.log(chatbox_data);
+  return chatbox_data;
+}
+
+function setChatboxData(chatbox_data) {
+  document.getElementsByClassName(
+    "uueGX"
+  )[0].childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].innerHTML =
+    chatbox_data;
+}
+
+function getChatName() {
+  var author = document.getElementsByClassName(
+    "_7UhW9 vy6Bb qyrsm KV-D4 fDxYl"
+  )[1].innerHTML;
+  // console.log("getChatName", author);
+  return author;
+}
+
+function setChatName(author) {
+  document.getElementsByClassName(
+    "_7UhW9 vy6Bb qyrsm KV-D4 fDxYl"
+  )[1].innerHTML = author;
 }
 
 function getContextforEmotionDetection() {
@@ -84,27 +153,34 @@ function getContext(number_of_msgs) {
   msgs = msgs.slice(-number_of_msgs);
   // console.log(msgs);
   old_latest_msg = msgs[number_of_msgs - 1];
-  //console.log("IN CONTEXT: ");
-  for (const msg of msgs) {
-    try {
-      var text =
-        msg.childNodes[1].childNodes[0].childNodes[0].childNodes[0]
-          .childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0]
-          .childNodes[0].innerHTML;
-      // console.log(text);
-      context += text + "#";
-    } catch {}
+  console.log("IN CONTEXT: ");
+  console.log(old_latest_msg);
+  for (var i = 0; i < number_of_msgs; i++) {
+    // try {
+    var text = getMessageValue(i);
+    context += "Person1: " + text + "#";
+    // } catch {}
   }
+  // for (const msg of msgs) {
+  //   try {
+  //     var text =
+  //       msg.childNodes[1].childNodes[0].childNodes[0].childNodes[0]
+  //         .childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0]
+  //         .childNodes[0].innerHTML;
+  //     // console.log(text);
+  //     msg.childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].innerHTML =
+  //       "hi";
+  //     context += text + "#";
+  //   } catch {}
+  // }
+  context += "Myname";
   console.log(context);
 
-  author = document.getElementsByClassName("_7UhW9 vy6Bb qyrsm KV-D4 fDxYl")[1]
-    .innerHTML;
-  console.log(author);
+  author = getChatName();
+  console.log("author", author);
 
-  chatbox_data =
-    document.getElementsByClassName("uueGX")[0].childNodes[0].childNodes[1]
-      .childNodes[0].childNodes[0].childNodes[1].childNodes[0].innerHTML;
-  console.log(chatbox_data);
+  chatbox_data = getChatboxData();
+  console.log("chatbox_data", chatbox_data);
 
   // msgs.each(function () {
   //   var classes = $(this).attr("class");
@@ -213,10 +289,11 @@ function getContextforAutocomplete() {
 }
 
 function getEmotionDetectionResults(emotion_context) {
-  // Emotion context format: [context, messageDOMs, authors, myname]
+  // Emotion context format for instagram: [context, author, chatbox_data]
   // ////console.log("Emotion Detection RESULTS");
   var context = emotion_context[0];
-  var DOMs = emotion_context[1];
+  var author = emotion_context[1];
+  // var DOMs = emotion_context[1];
   new_context = "";
   $.ajax({
     url: "http://localhost:5000/emotion",
@@ -230,7 +307,7 @@ function getEmotionDetectionResults(emotion_context) {
       globalThis.new_context = displayEmotionResults(
         res.EMOTION,
         context,
-        DOMs
+        author
       );
     },
   });
@@ -240,12 +317,12 @@ function getEmotionDetectionResults(emotion_context) {
 }
 
 function getCalendarResults(calendar_context, new_context) {
-  // calendar_context = [context, messageDOMs, authors, myname]
+  // calendar_context = [context, author, chatbox_data]
   var context = new_context;
-  var DOMs = calendar_context[1];
-  var authors = calendar_context[2];
+  // var DOMs = calendar_context[1];
+  var author = calendar_context[1];
   // console.log(authors);
-  var myname = calendar_context[3];
+  var myname = "Myname";
   //console.log("Get new: ");
   //console.log(context);
 
@@ -257,7 +334,7 @@ function getCalendarResults(calendar_context, new_context) {
     success: (d) => {
       ////console.log("Calender Response: ");
       ////console.log(d.CALENDAR);
-      displayCalendar(d.CALENDAR, DOMs, context, authors, myname);
+      displayCalendar(d.CALENDAR, context, author, myname);
     },
   });
 }
@@ -703,26 +780,30 @@ function calculateAverageEmotion(emotionListVals) {
       }
     }
     old_name += "]";
-    document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML =
-      old_name;
+    setChatName(old_name);
+    // document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML =
+    //   old_name;
     // console.log(old_name);
   } else {
-    document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML +=
-      " [";
+    setChatName(getChatName() + " [");
+    // document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML +=
+    //   " [";
 
     for (const em of Object.keys(counts)) {
-      document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML +=
-        em;
+      setChatName(getChatName() + em);
+      // document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML +=
+      //   em;
     }
 
-    document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML += "]";
+    // document.getElementsByClassName("_21nHd")[0].childNodes[0].innerHTML += "]";
+    setChatName(getChatName() + "]");
     // console.log("NEW");
   }
   //console.log(counts);
   return counts;
 }
 
-function displayEmotionResults(vals, context, DOMs) {
+function displayEmotionResults(vals, context, author) {
   ////console.log("In Display emotion function");
   var myname;
   var msgs = [];
@@ -740,8 +821,11 @@ function displayEmotionResults(vals, context, DOMs) {
   // console.log(context);
   split = context.match(/((.|\n)*)\#(.|\n)*/);
   context = split[1];
-  myname = split[2];
+  // myname = split[2];
   context = context.split("#");
+  console.log("display emotion");
+  console.log(context);
+  console.log(vals);
 
   //console.log("displayEmotionResults context: ");
   //console.log(context);
@@ -761,8 +845,8 @@ function displayEmotionResults(vals, context, DOMs) {
     // context = context[1].split("#").slice(1, -1);
     //console.log(context[i].split(/:(.*)/s).slice(0, 2)[1].trim());
   }
-  // //console.log("Messages: ");
-  // //console.log(msgs);
+  console.log("Messages: ");
+  console.log(msgs);
   var new_context = "";
 
   // //console.log("IN DISPLAY EMOTION: ");
@@ -770,10 +854,12 @@ function displayEmotionResults(vals, context, DOMs) {
     var temp = vals[i];
     var message = msgs[i];
     // console.log(message + " #" + temp + "#");
-    $(DOMs[i]).text("");
+    // $(DOMs[i]).text("");
     // //console.log("<span>" + message + " #" + temp + "#" + "</span>");
     new_context += message + " [" + temp + "]" + "<SPLIT>";
-    $(DOMs[i]).append("<span>" + message + " [" + temp + "]" + "</span>");
+    // $(DOMs[i]).append("<span>" + message + " [" + temp + "]" + "</span>");
+    console.log(message + "[" + temp + "]");
+    setMessageValue(i, message + "[" + temp + "]");
   }
   counts = calculateAverageEmotion(vals);
 
@@ -786,17 +872,17 @@ function displayEmotionResults(vals, context, DOMs) {
   return new_context;
 }
 
-function displayCalendar(vals, DOMs, context, authors, selfName) {
+function displayCalendar(vals, context, author, selfName) {
   // ////console.log("In Display Calendar function");
   var context = context.split("<SPLIT>");
-  authors = [...new Set(authors)];
+  // authors = [...new Set(authors)];
   var nonSelfNames = "";
   // console.log(authors);
-  if (authors.length > 1) {
-    nonSelfNames = authors.join(", ");
-  } else {
-    nonSelfNames = authors[0];
-  }
+  // if (authors.length > 1) {
+  //   nonSelfNames = authors.join(", ");
+  // } else {
+  //   nonSelfNames = authors[0];
+  // }
 
   ////console.log(selfName, "-|-", nonSelfNames);
   // //console.log("DISPLAY CALENDAR: ");
@@ -851,11 +937,11 @@ function displayCalendar(vals, DOMs, context, authors, selfName) {
       // var link = "https://calendar.google.com/calendar/u/0/r/eventedit?text=Quick Chat with " + nonSelfNames + "&details=This is a quick Chat with you (" + selfName + ") and " + nonSelfNames + ". This invite was automatically detected and created by You! &dates=20210222T190000Z/20210222T193000"
       var link =
         "https://calendar.google.com/calendar/u/0/r/eventedit?text=Quick Chat with " +
-        nonSelfNames +
+        author +
         "&details=This is a quick Chat with you (" +
         selfName +
         ") and " +
-        nonSelfNames +
+        author +
         ". This invite was automatically detected and created by WhatsNxt! &dates=" +
         year +
         month +
@@ -873,9 +959,9 @@ function displayCalendar(vals, DOMs, context, authors, selfName) {
         "00";
 
       // console.log(nonSelfNames);
-      // console.log(link);
-      $(DOMs[i]).text("");
-      $(DOMs[i]).append(
+      console.log(link);
+      setMessageValue(
+        i,
         "<span>" +
           // message.slice(0, temp.start) +
           '<a target="_blank" href="' +
@@ -903,20 +989,23 @@ $(document).ready(function () {
   isAutoPrompt = false;
   isShift = false;
   isSelect = false;
-
+  flag = true;
   emotion_call_flag = false;
   chat_name = "";
   newChatName = "";
   var interval = setInterval(function () {
-    if (
-      document.getElementsByClassName("_7UhW9 vy6Bb qyrsm KV-D4 fDxYl").length >
-      1
-    ) {
-      console.log("context");
-      var context = getContext(10);
-      getAutocompleteResults(context[0]);
-      console.log(context);
-    }
+    // if (
+    //   document.getElementsByClassName("_7UhW9 vy6Bb qyrsm KV-D4 fDxYl").length >
+    //     1
+    // ) {
+    //   flag = false;
+    //   console.log("context");
+    //   var context = getContext(10);
+    //   var new_context = getEmotionDetectionResults(context);
+    //   getCalendarResults(context, new_context);
+    //   // getAutocompleteResults(context[0]);
+    //   console.log(context);
+    // }
 
     // console.log("Loading..." + curSelectWord);
     if (emotion_call_flag == true) {
@@ -925,6 +1014,10 @@ $(document).ready(function () {
       // Format of returned context: [context, messageDOMs, authors, myname]
       // console.log("Calling EMOTION");
       var context = getContext(10);
+      console.log("old_latest_msg");
+
+      console.log(old_latest_msg);
+
       // var emotion_context = getContextforEmotionDetection();
       ////console.log("CONTEXT: " + calendar_context);
       //console.log("Calling Emotion 1");
@@ -934,9 +1027,8 @@ $(document).ready(function () {
     if (tabKeyPress == false) {
       console.log("INSIDE Tab key");
       if (
-        document.getElementsByClassName(
-          "DPiy6 qF0y9 Igw0E IwRSH eGOV_ acqo5 vwCYk"
-        ).length > 0
+        document.getElementsByClassName("_7UhW9 vy6Bb qyrsm KV-D4 fDxYl")
+          .length > 1
       ) {
         console.log("IN INSTAGRAM");
         // chat_name =
@@ -1042,10 +1134,15 @@ $(document).ready(function () {
         // console.log("Errorsss");
       }
 
-      var msgs = $(".focusable-list-item");
-      msgs = msgs.slice(-5);
+      var msgs =
+        document.getElementsByClassName("frMpI -sxBV")[0].childNodes[0]
+          .childNodes;
+      msgs = Array.from(msgs);
 
-      new_latest_msg = msgs[4];
+      msgs = msgs.slice(-2);
+
+      new_latest_msg = msgs[1];
+
       if (
         old_latest_msg != new_latest_msg &&
         old_latest_msg != undefined &&
