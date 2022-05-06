@@ -70,7 +70,7 @@ function getChatboxData() {
 function setChatboxData(chatbox_data) {
   document.getElementsByClassName(
     "uueGX"
-  )[0].childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].innerHTML =
+  )[0].childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].value =
     chatbox_data;
 }
 
@@ -251,7 +251,8 @@ function getContextforAutocomplete(number_of_msgs) {
   var authors = [];
   var myname = "";
 
-  var msgs = document.getElementsByClassName("frMpI -sxBV")[0].childNodes[0].childNodes;
+  var msgs =
+    document.getElementsByClassName("frMpI -sxBV")[0].childNodes[0].childNodes;
   msgs = Array.from(msgs);
   msgs = msgs.slice(-number_of_msgs);
   //console.log("MSGS: "+msgs);
@@ -265,7 +266,7 @@ function getContextforAutocomplete(number_of_msgs) {
     // } catch {}
   }
   contextList = context.split("#");
-  console.log("CONTEXT LIST: "+ contextList);
+  console.log("CONTEXT LIST: " + contextList);
   // for (const msg of msgs) {
   //   try {
   //     var text =
@@ -278,7 +279,6 @@ function getContextforAutocomplete(number_of_msgs) {
   //     context += text + "#";
   //   } catch {}
   // }
- 
 
   author = getChatName();
   //console.log("author", author);
@@ -347,7 +347,6 @@ function getContextforAutocomplete(number_of_msgs) {
   // // //console.log("Myname: ", myname);
   // return [context, messageDOMs, authors, myname];
   return [context, author, chatbox_data];
-  
 }
 
 function getEmotionDetectionResults(emotion_context) {
@@ -470,7 +469,9 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
 
   //////console.log("words : ", words);
   $("#pprompts").remove();
-  $('div[class="             qF0y9          Igw0E     IwRSH       hLiUi      acqo5  vwCYk                                                                                                               "]').append(
+  $(
+    'div[class="             qF0y9          Igw0E     IwRSH       hLiUi      acqo5  vwCYk                                                                                                               "]'
+  ).append(
     "<div id='pprompts' style='padding: 20px;margin: 20px 20px 10px 20px; border-radius: 15px; background:#ecffe9'></div>"
   );
   $("#pprompts").append(
@@ -619,49 +620,49 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
   $(".prompt").on("click", function () {
     $("#pprompts").remove();
     document
-      .getElementsByClassName("_2lMWa")[0]
-      .removeEventListener("keydown", handlePrompts);
+      .getElementsByClassName("uueGX")[0]
+      .childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].removeEventListener(
+        "keydown",
+        handlePrompts
+      );
 
-    var currentMessage =
-      document.getElementsByClassName("p3_M1")[0].childNodes[0].childNodes[1]
-        .innerHTML;
+    var currentMessage = getChatboxData();
     currentMessage = currentMessage.trim() + " " + $(this).text();
-    document.getElementsByClassName(
-      "p3_M1"
-    )[0].childNodes[0].childNodes[1].innerHTML = "";
-    document.execCommand("insertText", false, currentMessage);
-    $('div[data-tab="10"]').focus();
-    $('div[data-tab="10"]').siblings().hide();
+    setChatboxData(currentMessage);
+    document
+      .getElementsByClassName("uueGX")[0]
+      .childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].focus();
+    // $('div[data-tab="10"]').siblings().hide();
   });
 
   $(".predictmanual").on("click", function () {
     $("#pprompts").remove();
     document
-      .getElementsByClassName("_2lMWa")[0]
-      .removeEventListener("keydown", handlePrompts);
+      .getElementsByClassName("uueGX")[0]
+      .childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].removeEventListener(
+        "keydown",
+        handlePrompts
+      );
 
-    var currentMessage =
-      document.getElementsByClassName("p3_M1")[0].childNodes[0].childNodes[1]
-        .innerHTML;
+    var currentMessage = getChatboxData();
     currentMessage = currentMessage.trim() + " " + $(this).text();
-    document.getElementsByClassName(
-      "p3_M1"
-    )[0].childNodes[0].childNodes[1].innerHTML = "";
-    document.execCommand("insertText", false, currentMessage);
-    $('div[data-tab="10"]').focus();
-    $('div[data-tab="10"]').siblings().hide();
+    setChatboxData(currentMessage);
+    document
+      .getElementsByClassName("uueGX")[0]
+      .childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].focus();
+    // $('div[data-tab="10"]').siblings().hide();
   });
 
   $(".complete").on("click", function () {
     $("#pprompts").remove();
     document
-      .getElementsByClassName("_2lMWa")[0]
-      .removeEventListener("keydown", handlePrompts);
+      .getElementsByClassName("uueGX")[0]
+      .childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].removeEventListener(
+        "keydown",
+        handlePrompts
+      );
 
-    var currentMessage =
-      document.getElementsByClassName("p3_M1")[0].childNodes[0].childNodes[1]
-        .innerHTML;
-    // $('div[data-tab="10"]').text("");
+    var currentMessage = getChatboxData();
     const lastindex = currentMessage.lastIndexOf(" ");
     if (lastindex == -1) {
       currentMessage = $(this).text();
@@ -670,12 +671,11 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
       //////console.log("Word Complete : " + currentMessage);
       currentMessage = currentMessage + " " + $(this).text();
     }
-    document.getElementsByClassName(
-      "p3_M1"
-    )[0].childNodes[0].childNodes[1].innerHTML = "";
-    document.execCommand("insertText", false, currentMessage);
-    $('div[data-tab="10"]').focus();
-    $('div[data-tab="10"]').siblings().hide();
+    setChatboxData(currentMessage);
+    document
+      .getElementsByClassName("uueGX")[0]
+      .childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].focus();
+    // $('div[data-tab="10"]').siblings().hide();
   });
 
   function handlePrompts(e) {
@@ -787,8 +787,11 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
         e.stopImmediatePropagation();
         $("#pprompts").remove();
         document
-          .getElementsByClassName("_2lMWa")[0]
-          .removeEventListener("keydown", handlePrompts);
+          .getElementsByClassName("uueGX")[0]
+          .childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].removeEventListener(
+            "keydown",
+            handlePrompts
+          );
         ////console.log("Current Prompt key(escape)", currSelectedPrompt);
 
         // var currentMessage = $('div[data-tab="10"]').text();
@@ -803,8 +806,11 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
           e.preventDefault();
           e.stopImmediatePropagation();
           document
-            .getElementsByClassName("_2lMWa")[0]
-            .removeEventListener("keydown", handlePrompts);
+            .getElementsByClassName("uueGX")[0]
+            .childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].removeEventListener(
+              "keydown",
+              handlePrompts
+            );
           if (isAutoPrompt) {
             ////console.log("Current Prompt key(enter)", currSelectedPrompt);
             document.querySelectorAll(".prompt")[currSelectedPrompt].click();
@@ -816,8 +822,11 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
     }
   }
   document
-    .getElementsByClassName("_2lMWa")[0]
-    .addEventListener("keydown", handlePrompts);
+    .getElementsByClassName("uueGX")[0]
+    .childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].addEventListener(
+      "keydown",
+      handlePrompts
+    );
   document.querySelector('[data-tab="8"]').scrollIntoView(false);
 }
 
@@ -1113,71 +1122,82 @@ $(document).ready(function () {
         // ////console.log("Calling Emotion 1");
         // var new_context = getEmotionDetectionResults(context);
         // // getCalendarResults(context, new_context);
-        $('[class="X3a-9"]').on("keydown",function (e) {
-          //console.log("SHIFT");
-          if (e.keyCode == 16) {
-            
-            isShift = true;
-          }
+        document
+          .getElementsByClassName("uueGX")[0]
+          .childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].addEventListener(
+            "keydown",
+            function (e) {
+              //console.log("SHIFT");
+              if (e.keyCode == 16) {
+                isShift = true;
+              }
 
-          // Shift + tab key for prompts
-          if (isShift && e.keyCode == 9) {
-            e.stopPropagation();
-            e.preventDefault();
-            isAutoPrompt = true;
-            //tabKeyPress = true;
-            ////////console.log(tabKeyPress);
-            $('[class="X3a-9"]').blur();
-            ////console.log("TAB KEY PRESSED");
-            //Generate Prompts
-            //sampleFun();
-            // var context = getContextforAutocomplete();
+              // Shift + tab key for prompts
+              if (isShift && e.keyCode == 9) {
+                e.stopPropagation();
+                e.preventDefault();
+                isAutoPrompt = true;
+                //tabKeyPress = true;
+                ////////console.log(tabKeyPress);
+                $('[class="X3a-9"]').blur();
+                ////console.log("TAB KEY PRESSED");
+                //Generate Prompts
+                //sampleFun();
+                // var context = getContextforAutocomplete();
 
-            // Format of returned context: [context, messageDOMs, authors, myname]
-            var context = getContext(5);
-            // var emotion_context = getContextforEmotionDetection();
-            // ////console.log("CONTEXT: " + calendar_context);
-            ////console.log("Calling Emotion 2");
+                // Format of returned context: [context, messageDOMs, authors, myname]
+                var context = getContext(5);
+                // var emotion_context = getContextforEmotionDetection();
+                // ////console.log("CONTEXT: " + calendar_context);
+                ////console.log("Calling Emotion 2");
 
-            // var new_context = getEmotionDetectionResults(context);
-            // getCalendarResults(context, new_context);
-            currSelectedPrompt = 0;
-            console.log("TABKEYPRESS CONTEXT TO AUTOCOMPLETE : "+context[0]);
-            getAutocompleteResults(context[0]);
-          } else if (
-            (e.keyCode >= 65 && e.keyCode <= 90) ||
-            (e.keyCode >= 97 && e.keyCode <= 122) ||
-            e.keyCode == 32 ||
-            e.keyCode == 8
-          ) {
-            key_pressed = e.keyCode;
-            isAutoPrompt = false;
-            isSelect = false;
-            // On a keypress, the pressed key is not included in the context, so we need to add that char in the context.
-            // So, first we convert the keycode to char
-            var last_char = String.fromCharCode(key_pressed).toLowerCase();
+                // var new_context = getEmotionDetectionResults(context);
+                // getCalendarResults(context, new_context);
+                currSelectedPrompt = 0;
+                console.log(
+                  "TABKEYPRESS CONTEXT TO AUTOCOMPLETE : " + context[0]
+                );
+                getAutocompleteResults(context[0]);
+              } else if (
+                (e.keyCode >= 65 && e.keyCode <= 90) ||
+                (e.keyCode >= 97 && e.keyCode <= 122) ||
+                e.keyCode == 32 ||
+                e.keyCode == 8
+              ) {
+                key_pressed = e.keyCode;
+                isAutoPrompt = false;
+                isSelect = false;
+                // On a keypress, the pressed key is not included in the context, so we need to add that char in the context.
+                // So, first we convert the keycode to char
+                var last_char = String.fromCharCode(key_pressed).toLowerCase();
 
-            ////console.log("KEY PRESSED");
-            var context = getContext(5);
-            ////console.log(context[0]);
-            ////console.log("LAst char: ", last_char);
+                ////console.log("KEY PRESSED");
+                var context = getContext(5);
+                ////console.log(context[0]);
+                ////console.log("LAst char: ", last_char);
 
-            // key_pressed == 8 is for backspace, so, for backspace, we remove the last char
-            if (key_pressed != 8) {
-              context[0] = context[0] + last_char;
-              ////console.log(context[0]);
-            } else {
-              context[0] = context[0].slice(0, -1);
-              ////console.log(context[0]);
+                // key_pressed == 8 is for backspace, so, for backspace, we remove the last char
+                if (key_pressed != 8) {
+                  context[0] = context[0] + last_char;
+                  ////console.log(context[0]);
+                } else {
+                  context[0] = context[0].slice(0, -1);
+                  ////console.log(context[0]);
+                }
+
+                getWordCompleteResults(context[0], key_pressed);
+              }
             }
+          );
 
-            getWordCompleteResults(context[0], key_pressed);
-          }
-        });
-
-        $('[class="X3a-9"]').on("keyup", function (e) {
-          isShift = false;
-        });
+        document
+          .getElementsByClassName("uueGX")[0]
+          .childNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].childNodes[0].addEventListener(
+            "keyup",
+            function (e) {
+              isShift = false;
+            }
+          );
 
         tabKeyPress = true;
 
