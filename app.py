@@ -66,7 +66,7 @@ nltk.download('wordnet')
 nltk.download('omw-1.4')
 
 emotion_loaded_model = pickle.load(open(
-    '/home/versatile/RON/Btech_Project/Models/emotion_pipeline_model.pickle', 'rb'))
+    '/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/emotion_detection/emotion_pipeline_model.pickle', 'rb'))
 # text_data = pd.DataFrame(['I am pissed at you', 'How are you?', 'What a weird experience that was!', 'I feel sparkling', 'I miss him', 'I loved the way you cooked for me'])
 # raw_data = text_data.copy()
 # line = data_preprocessing(text_data)
@@ -90,7 +90,7 @@ global modelPipeline
 # modelPipeline = pipeline(
 # 'text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/DistilGPT2_1l_chats_new_model/output')
 modelPipeline = pipeline(
-    'text-generation', model='/home/versatile/RON/Btech_Project/Models/OnlyTextModel/output')
+    'text-generation', model='/home/rhugaved/Academics/BTech/PROJECT/GIT_PROJECT/rhugaved_without_name/output')
 
 
 def get_trigram_freq(tokens):
@@ -304,7 +304,7 @@ def autocomplete():
     print("Original context: ", context)
     # context = context.split("#")
     # print("List: ", context)
-    context = re.sub(r' \[(.*?)\]', '', context)
+    context = re.sub(r"\[(.*?)\]", "", context)
     print("After regex: ", context)
     # new_context = context.split("##")[-6:]
     # context = ""
@@ -352,7 +352,7 @@ def wordcomplete():
     predict = []
     manual = []
     wordlist = context.split(" ")
-    if len(context) != 0 and len(wordlist) > 2:
+    if len(context) != 0 and len(wordlist) > 1:
         complete = worker(context, '')
         predict = worker(context, 'pred')
     elif len(context) == 0:
@@ -397,7 +397,7 @@ def wordcomplete():
         # print(pred_dict_each)
         pred_list.extend(sorted(pred_dict_each.items(),
                                 key=lambda kv: (kv[1], kv[0]), reverse=True))
-        print(pred_list)
+        # print("pred_list: ", pred_list)
         # pred_list_final = []
         # [pred_list_final.append(i) for i, j in pred_list]
         # pred_list_final

@@ -38,7 +38,7 @@ function getMessageValue(messageIndex, number_of_msgs) {
       msgs[messageIndex].childNodes[1].childNodes[0].childNodes[0].childNodes[0]
         .childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0]
         .childNodes[0].childNodes[0].childNodes[0].innerHTML;
-    console.log("Calendar context successful");
+    // console.log("Calendar context successful");
     flag = false;
   } catch {}
 
@@ -190,8 +190,8 @@ function getContext(number_of_msgs) {
   //     context += text + "#";
   //   } catch {}
   // }
-  context += "Myname";
-  console.log(context);
+  context += "Myname: " + getChatboxData();
+  // console.log(context);
 
   author = getChatName();
   //console.log("author", author);
@@ -440,7 +440,7 @@ function getWordCompleteResults(context, key_pressed) {
   });
 }
 
-function getAutocompleteResults(context) {
+function getAutocompleteResults(context, chatbox_data) {
   $.ajax({
     url: "http://localhost:5000/wordcomplete",
     crossDomain: true,
@@ -448,7 +448,7 @@ function getAutocompleteResults(context) {
       "Access-Control-Allow-Origin": "http://localhost:5000/",
     },
     dataType: "json",
-    data: { context: context },
+    data: { context: chatbox_data },
     success: (res) => {
       wordcomplete = [res.COMPLETE, res.PREDICT, res.MANUAL];
       autocomplete = "";
@@ -519,7 +519,6 @@ function displayAutocompleteResults(words, prompts, context, key_pressed) {
   complete = words[0];
   predict = words[1];
   manual = words[2];
-
   var i = 0;
   var pred_complete = 0;
   var id_count = 0;
@@ -1163,8 +1162,11 @@ $(document).ready(function () {
                 //sampleFun();
                 // var context = getContextforAutocomplete();
 
-                // Format of returned context: [context, messageDOMs, authors, myname]
+                // Format of returned context: [context, author, chatbox_data]
                 var context = getContext(5);
+                console.log(context);
+                chatbox_data = getChatboxData();
+                console.log(chatbox_data);
                 // var emotion_context = getContextforEmotionDetection();
                 // ////console.log("CONTEXT: " + calendar_context);
                 ////console.log("Calling Emotion 2");
@@ -1172,10 +1174,10 @@ $(document).ready(function () {
                 // var new_context = getEmotionDetectionResults(context);
                 // getCalendarResults(context, new_context);
                 currSelectedPrompt = 0;
-                console.log(
-                  "TABKEYPRESS CONTEXT TO AUTOCOMPLETE : " + context[0]
-                );
-                getAutocompleteResults(context[0]);
+                // console.log(
+                //   "TABKEYPRESS CONTEXT TO AUTOCOMPLETE : " + context[0]
+                // );
+                getAutocompleteResults(context[0], chatbox_data);
               } else if (
                 (e.keyCode >= 65 && e.keyCode <= 90) ||
                 (e.keyCode >= 97 && e.keyCode <= 122) ||
@@ -1190,20 +1192,24 @@ $(document).ready(function () {
                 var last_char = String.fromCharCode(key_pressed).toLowerCase();
 
                 ////console.log("KEY PRESSED");
-                var context = getContext(5);
-                ////console.log(context[0]);
-                ////console.log("LAst char: ", last_char);
+                // var context = getContext(5);
+                // console.log(context[0]);
+                chatbox_data = getChatboxData();
+                console.log(chatbox_data);
+
+                console.log("LAst char: ", last_char);
 
                 // key_pressed == 8 is for backspace, so, for backspace, we remove the last char
                 if (key_pressed != 8) {
-                  context[0] = context[0] + last_char;
-                  ////console.log(context[0]);
+                  chatbox_data = chatbox_data + last_char;
+                  ////console.log(chatbox_data);
                 } else {
-                  context[0] = context[0].slice(0, -1);
-                  ////console.log(context[0]);
+                  chatbox_data = chatbox_data.slice(0, -1);
+                  ////console.log(chatbox_data);
                 }
+                console.log(chatbox_data + "|");
 
-                getWordCompleteResults(context[0], key_pressed);
+                getWordCompleteResults(chatbox_data, key_pressed);
               }
             }
           );
