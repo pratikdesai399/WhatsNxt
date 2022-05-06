@@ -115,6 +115,7 @@ function getContext(number_of_msgs) {
       context += author + " " + message + "#";
 
       if (type === "msg_outgoing" && myname === "") {
+        console.log("Author, ", author);
         myname = author;
       }
       if (type != "msg_outgoing") {
@@ -137,8 +138,8 @@ function getContext(number_of_msgs) {
     context += " ";
   }
 
-  //console.log("calender context: ");
-  //console.log(context);
+  console.log("calender context: ");
+  console.log(context);
   // //console.log("CALENDAR: ", context);
   // console.log("Authors: ", authors);
   // console.log("Myname: ", myname);

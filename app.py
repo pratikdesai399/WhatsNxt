@@ -12,7 +12,7 @@ from flask_cors import CORS
 # from matplotlib.pyplot import text
 # from pandas import array
 # from sympy import content
-from transformers import pipeline
+from transformers import convert_tf_weight_name_to_pt_weight_name, pipeline
 import pickle
 import numpy as np
 import pandas as pd
@@ -185,16 +185,16 @@ tokens = brown.words()
 print("Brown added")
 # tokens += reuters.words()
 # print("Reuters added")
-# tokens += nps_chat.words()
-# print("NPS Chat added")
+tokens += nps_chat.words()
+print("NPS Chat added")
 # tokens += semcor.words()
 # print("Semcor added")
 # tokens += gutenberg.words()
 # print("Gutenberg added")
 # tokens += conll2000.words()
 # print("Conll 2000 added")
-# tokens += movie_reviews.words()
-# print("Movie Review added")
+tokens += movie_reviews.words()
+print("Movie Review added")
 
 bgs_freq = get_bigram_freq(tokens)
 tgs_freq = get_trigram_freq(tokens)
@@ -306,6 +306,23 @@ def autocomplete():
     # print("List: ", context)
     context = re.sub(r' \[(.*?)\]', '', context)
     print("After regex: ", context)
+    context = context.split("#")
+    context_without_names = ""
+    for i in range(len(context)):
+        con = context[i]
+        try:
+            c = con.split(": ")[1]
+            if i == len(context) - 1:
+                context_without_names += c
+            else:
+                context_without_names += c + "#"
+
+        except:
+            context_without_names += con
+
+    context = context_without_names
+    print("After removing names: ", context)
+
     # new_context = context.split("##")[-6:]
     # context = ""
     # for c in new_context:
@@ -327,9 +344,15 @@ def autocomplete():
 
     print("Result: {}".format(result))
     new_result = []
+    unique_results_list = []
     for dic in result:
         gen_text = dic['generated_text']
-        new_result.append({'generated_text': gen_text.replace(context, "")})
+        temp_result_value = gen_text.replace(context, "")
+        if temp_result_value not in unique_results_list:
+            unique_results_list.append(temp_result_value)
+            new_result.append({'generated_text': temp_result_value})
+        else:
+            continue
 
     print(new_result)
     res = jsonify({
@@ -447,6 +470,7 @@ def calendar():
                 dt = []
                 meeting_words_list = []
             print("Dt: ", type(dt))
+            print("Dt->: ", dt)
             print("Meeting words", meeting_words_list)
             has_calendar = False
             day = None
@@ -455,8 +479,12 @@ def calendar():
             hour = None
             minute = None
             # print(dt)
+            if(type(dt) is list):
+                if(len(dt) > 1):
+                    print("List")
+                    pass
             # If there is no date and time mentioned in the messsage
-            if(dt == [] or type(dt) is tuple or meeting_words_list == []):
+            elif(dt == [] or type(dt) is tuple or meeting_words_list == []):
                 print(dt)
                 pass
             else:
