@@ -19,41 +19,58 @@ function sampleFun() {
 //   return chat_name;
 // }
 
-function getMessageValue(messageIndex) {
+function getMessageValue(messageIndex, number_of_msgs) {
   // //console.log(messageIndex);
   var msg_value;
   var msgs =
     document.getElementsByClassName("frMpI -sxBV")[0].childNodes[0].childNodes;
   msgs = Array.from(msgs);
-  msgs = msgs.slice(-messageIndex - 2);
+  msgs = msgs.slice(-number_of_msgs);
+  var flag = true;
   // //console.log(msgs);
 
   // //console.log(msgs);
   // old_latest_msg = msgs[messageIndex - 1];
+
+  // First try is to get only text data from calendar link generated message as it has more child nodes
   try {
     msg_value =
-      msgs[1].childNodes[1].childNodes[0].childNodes[0].childNodes[0]
+      msgs[messageIndex].childNodes[1].childNodes[0].childNodes[0].childNodes[0]
         .childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0]
-        .childNodes[0].innerHTML;
-    // //console.log(msg_value);
-  } catch {
-    msg_value = "";
-    //console.log("error msg");
+        .childNodes[0].childNodes[0].childNodes[0].innerHTML;
+    console.log("Calendar context successful");
+    flag = false;
+  } catch {}
+
+  // 2nd try to get regular msg data
+  if (flag) {
+    try {
+      msg_value =
+        msgs[messageIndex].childNodes[1].childNodes[0].childNodes[0]
+          .childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0]
+          .childNodes[0].childNodes[0].innerHTML;
+      // //console.log(msg_value);
+    } catch {
+      msg_value = "";
+      //console.log("error msg");
+    }
   }
   // //console.log(msg_value);
   return msg_value;
 }
 
-function setMessageValue(messageIndex, msg_value) {
+function setMessageValue(messageIndex, number_of_msgs, msg_value) {
   var msgs =
     document.getElementsByClassName("frMpI -sxBV")[0].childNodes[0].childNodes;
   msgs = Array.from(msgs);
-  msgs = msgs.slice(-messageIndex - 1);
+  msgs = msgs.slice(-number_of_msgs);
   // //console.log(msgs);
   // //console.log("IN CONTEXT: ");
   try {
     // //console.log(msgs[0]);
-    msgs[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].innerHTML =
+    msgs[
+      messageIndex
+    ].childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].innerHTML =
       msg_value;
     // //console.log(msg_value);
   } catch {}
@@ -157,7 +174,7 @@ function getContext(number_of_msgs) {
   //console.log(old_latest_msg);
   for (var i = 0; i < number_of_msgs; i++) {
     // try {
-    var text = getMessageValue(i);
+    var text = getMessageValue(i, number_of_msgs);
     context += "Person1: " + text + "#";
     // } catch {}
   }
@@ -174,7 +191,7 @@ function getContext(number_of_msgs) {
   //   } catch {}
   // }
   context += "Myname";
-  //console.log(context);
+  console.log(context);
 
   author = getChatName();
   //console.log("author", author);
@@ -261,7 +278,7 @@ function getContextforAutocomplete(number_of_msgs) {
   //console.log(old_latest_msg);
   for (var i = 0; i < number_of_msgs; i++) {
     // try {
-    var text = getMessageValue(i);
+    var text = getMessageValue(i, number_of_msgs);
     context += text + "#";
     // } catch {}
   }
@@ -930,7 +947,7 @@ function displayEmotionResults(vals, context, author) {
     new_context += message + " [" + temp + "]" + "<SPLIT>";
     // $(DOMs[i]).append("<span>" + message + " [" + temp + "]" + "</span>");
     //console.log(message + "[" + temp + "]");
-    setMessageValue(i, message + "[" + temp + "]");
+    setMessageValue(i, vals.length, message + "[" + temp + "]");
   }
   counts = calculateAverageEmotion(vals);
 
@@ -1033,6 +1050,7 @@ function displayCalendar(vals, context, author, selfName) {
       //console.log(link);
       setMessageValue(
         i,
+        vals.length,
         "<span>" +
           // message.slice(0, temp.start) +
           '<a target="_blank" href="' +
